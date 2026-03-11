@@ -19,11 +19,11 @@ export const Input = ({
     <div className="flex flex-col gap-1.5">
       {label ? (
         <label
-          htmlFor={inputId}
-          className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
-        >
-          {label}
-        </label>
+            htmlFor={inputId}
+            className="text-[13px] font-semibold text-slate-700 mb-0.5"
+          >
+            {label}
+          </label>
       ) : null}
       <input
         id={inputId}
