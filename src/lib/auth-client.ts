@@ -1,78 +1,27 @@
-// TODO: Replace with real BetterAuth client when FE-AUTH-01 lands.
-// This mock allows FE-AUTH-03 (login) and other frontend tasks to build
-// independently without the `better-auth` package installed.
+import { roles } from "@/core/auth/infrastructure/config/permissions"
+import { adminClient, organizationClient } from "better-auth/client/plugins"
+import { createAuthClient } from "better-auth/react"
 
-type AuthResponse<T> = {
-    data: T | null
-    error: { status: number; message: string } | null
-}
-
-type SignInOptions = {
-    onError?: (ctx: { error: { status: number; message: string } }) => void
-}
-
-type MockAuthClient = {
-    signIn: {
-        email: (
-            credentials: { email: string; password: string },
-            options?: SignInOptions,
-        ) => Promise<AuthResponse<{ user: { id: string; email: string; name: string } }>>
-    }
-    signUp: {
-        email: (
-            data: {
-                email: string
-                password: string
-                name: string
-                universityId: string
-                year: number
-                department?: string
+export const authClient = createAuthClient({
+    plugins: [
+        organizationClient({
+            roles: {
+                member: roles.member,
+                teacher: roles.teacher,
+                counselor: roles.counselor,
+                generalLeader: roles.generalLeader,
+                admin: roles.platformAdmin,
+                owner: roles.platformAdmin,
             },
-        ) => Promise<AuthResponse<{ user: { id: string; email: string } }>>
-    }
-    signOut: () => Promise<void>
-    useSession: () => { data: Session | null; isPending: boolean }
-}
+        }),
 
-export type Session = {
-    user: {
-        id: string
-        email: string
-        name: string
-        role: string
-        approved: boolean
-        emailVerified: boolean
-    }
-}
+        adminClient({
+            roles: {
+                admin: roles.platformAdmin,
+                user: roles.member,
+            },
+        }),
+    ],
+})
 
-export const authClient: MockAuthClient = {
-    signIn: {
-        email: async (credentials, options) => {
-            // Simulate network delay
-            await new Promise((resolve) => setTimeout(resolve, 800))
-
-            // Mock: always return success for now
-            return {
-                data: {
-                    user: {
-                        id: "mock-user-id",
-                        email: credentials.email,
-                        name: "Mock User",
-                    },
-                },
-                error: null,
-            }
-        },
-    },
-    signUp: {
-        email: async (data) => {
-            await new Promise((resolve) => setTimeout(resolve, 800))
-            return {
-                data: { user: { id: "mock-user-id", email: data.email } },
-                error: null,
-            }
-        },
-    },
-    signOut: async () => { },
-    useSession: () => ({ data: null, isPending: false }),
-}
+export type Session = typeof authClient.$Infer.Session
