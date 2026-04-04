@@ -14,7 +14,6 @@ const validateSignupForm = (data: {
     password: string
     year: string
     universityId: string
-    phoneNumber: string
     department: string
 }): { valid: boolean; errors: SignupErrors } => {
     const errors: SignupErrors = {}
@@ -43,10 +42,6 @@ const validateSignupForm = (data: {
 
     if (!data.universityId.trim()) {
         errors.universityId = "University ID is required"
-    }
-
-    if (!data.phoneNumber.trim()) {
-        errors.phoneNumber = "Phone number is required"
     }
 
     return { valid: Object.keys(errors).length === 0, errors }
@@ -91,7 +86,6 @@ export const SignupForm = () => {
         const password = (form.get("password") as string) ?? ""
         const year = (form.get("year") as string) ?? ""
         const universityId = (form.get("universityId") as string) ?? ""
-        const phoneNumber = (form.get("phoneNumber") as string) ?? ""
         const department = (form.get("department") as string) ?? ""
 
         const validation = validateSignupForm({
@@ -100,7 +94,6 @@ export const SignupForm = () => {
             password,
             year,
             universityId,
-            phoneNumber,
             department,
         })
 
@@ -126,7 +119,7 @@ export const SignupForm = () => {
             })
 
             if (data) {
-                router.push("/verify-email?sent=true")
+                router.push(`/verify-email?sent=true&email=${encodeURIComponent(email)}`)
             }
 
             if (error) {
