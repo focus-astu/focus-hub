@@ -4,14 +4,13 @@ import {
   createGetTasksUseCase,
   createInMemoryTaskRepository,
 } from "@/core/tasks"
-
-/**
- * Composition root: wire all feature dependencies here.
- * Swap implementations (e.g., InMemory -> Supabase) without touching use cases.
- *
- * Each feature module provides its own repository factory and use case factories.
- * This file is the only place where infrastructure meets application.
- */
+import {
+  createApproveUserUseCase,
+  createRejectUserUseCase,
+  createGetPendingUsersUseCase,
+  createMongodbAuthRepository,
+} from "@/core/auth"
+import { MongoClient } from "mongodb"
 
 // ─── Shared Infrastructure ───────────────────────────────────
 const idGenerator = cryptoIdGenerator
@@ -21,3 +20,11 @@ const taskRepository = createInMemoryTaskRepository()
 
 export const createTask = createCreateTaskUseCase({ taskRepository, idGenerator })
 export const getTasks = createGetTasksUseCase({ taskRepository })
+
+// ─── Auth Feature ────────────────────────────────────────────
+const mongoClient = new MongoClient(process.env.MONGODB_URI!)
+const authRepository = createMongodbAuthRepository(mongoClient)
+
+export const approveUser = createApproveUserUseCase({ authRepository })
+export const rejectUser = createRejectUserUseCase({ authRepository })
+export const getPendingUsers = createGetPendingUsersUseCase({ authRepository })
