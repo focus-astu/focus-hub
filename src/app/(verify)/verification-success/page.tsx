@@ -1,5 +1,6 @@
 "use client"
 
+import { Suspense } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import {
@@ -11,7 +12,7 @@ import { Logo } from "@/components/ui"
 
 const DEFAULT_EMAIL = "email@astu.edu.et"
 
-export default function VerificationSuccessPage() {
+const VerificationSuccessContent = () => {
   const searchParams = useSearchParams()
   const emailFromUrl = searchParams.get("email")
   const displayEmail = emailFromUrl || DEFAULT_EMAIL
@@ -127,5 +128,17 @@ export default function VerificationSuccessPage() {
         </nav>
       </footer>
     </main>
+  )
+}
+
+export default function VerificationSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    }>
+      <VerificationSuccessContent />
+    </Suspense>
   )
 }

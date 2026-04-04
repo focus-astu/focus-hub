@@ -1,5 +1,6 @@
 "use client"
 
+import { Suspense } from "react"
 import { authClient } from "@/lib/auth-client"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
@@ -21,7 +22,7 @@ type VerifyState =
 
 const DEFAULT_EMAIL = "email@astu.edu.et"
 
-export default function VerifyEmailPage() {
+const VerifyEmailContent = () => {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [state, setState] = useState<VerifyState>({ status: "sent" })
@@ -266,5 +267,17 @@ export default function VerifyEmailPage() {
         </p>
       </footer>
     </main>
+  )
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
   )
 }

@@ -119,7 +119,7 @@ export const SignupForm = () => {
                 universityId,
                 year: parseInt(year, 10),
                 department: department || undefined,
-            }, {
+            } as Parameters<typeof authClient.signUp.email>[0] & Record<string, unknown>, {
                 onError: (ctx) => {
                     setServerError(ctx.error.message || "Something went wrong")
                 },

@@ -75,12 +75,15 @@ export const auth = betterAuth({
           const userCount = await db.collection("user").countDocuments()
           if (userCount !== 1) return
 
+          const internalHeaders = new Headers()
+
           await auth.api.setRole({
             body: { userId: user.id, role: "admin" },
+            headers: internalHeaders,
           })
 
           await db.collection("user").updateOne(
-            { _id: user.id },
+            { _id: user.id as unknown as import("mongodb").ObjectId },
             { $set: { approved: true } },
           )
 
@@ -98,6 +101,7 @@ export const auth = betterAuth({
                 slug: org.slug,
                 userId: user.id,
               },
+              headers: internalHeaders,
             })
           }
         },

@@ -43,10 +43,12 @@ export const POST = async (request: NextRequest) => {
       )
     }
 
+    type OrgRole = "member" | "admin" | "owner" | "teacher" | "counselor" | "generalLeader"
+
     const body = await request.json() as {
       organizationId: string
       userId: string
-      role: string
+      role: OrgRole
     }
 
     if (!body.organizationId || !body.userId || !body.role) {
