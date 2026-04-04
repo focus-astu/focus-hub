@@ -1,3 +1,7 @@
 export { DomainError, EntityNotFoundError, ValidationError } from "./domain"
 export type { IdGenerator } from "./application"
+export type { EmailService, SendEmailOptions } from "./application"
 export { cryptoIdGenerator } from "./infrastructure/adapters/crypto-id-generator"
+export { createNodemailerEmailService } from "./infrastructure/email/nodemailer-email.service"
+export { emailVerificationTemplate } from "./infrastructure/email/templates/email-verification.template"
+export { accountApprovedTemplate } from "./infrastructure/email/templates/account-approved.template"

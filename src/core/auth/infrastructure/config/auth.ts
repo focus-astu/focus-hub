@@ -5,6 +5,8 @@ import { createAuthMiddleware, APIError } from "better-auth/api"
 import { mongodbAdapter } from "better-auth/adapters/mongodb"
 import { MongoClient, ObjectId, type Db } from "mongodb"
 import { ac, member, teacher, counselor, generalLeader, platformAdmin } from "./permissions"
+import { emailService } from "@/core/shared/infrastructure/config/dependencies"
+import { emailVerificationTemplate } from "@/core/shared/infrastructure/email/templates/email-verification.template"
 
 let _client: MongoClient | null = null
 let _db: Db | null = null
@@ -60,8 +62,16 @@ export const auth = betterAuth({
   emailVerification: {
     sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url }) => {
-      // TODO: Replace with Resend or production email service
-      console.log(`[DEV] Verification email for ${user.email}: ${url}`)
+      const html = emailVerificationTemplate({
+        userName: user.name,
+        verificationUrl: url,
+      })
+
+      await emailService.send({
+        to: user.email,
+        subject: "Verify your Focus ASTU email",
+        html,
+      })
     },
     autoSignInAfterVerification: true,
   },
