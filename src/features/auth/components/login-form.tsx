@@ -101,7 +101,7 @@ export const LoginForm = () => {
                     htmlFor="login-email"
                     className="text-sm font-semibold text-slate-700"
                 >
-                    Email Address
+                    Email
                 </label>
                 <div className="group relative">
                     <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors group-focus-within:text-blue-500">
@@ -119,7 +119,7 @@ export const LoginForm = () => {
                         aria-describedby={fieldErrors.email ? "email-error" : undefined}
                         autoComplete="email"
                         required
-                        className={`w-full rounded-xl border bg-slate-50 py-3 pl-11 pr-4 text-sm text-slate-900 shadow-sm transition-all placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 ${fieldErrors.email
+                        className={`w-full rounded-3xl border bg-[#F8FAFC] py-4 pl-12 pr-4 text-base text-slate-900 transition-all placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 ${fieldErrors.email
                             ? "border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-500/10"
                             : "border-slate-200"
                             }`}
@@ -144,7 +144,7 @@ export const LoginForm = () => {
                     </label>
                     <a
                         href="/forgot-password"
-                        className="text-xs font-semibold text-blue-600 transition-colors hover:text-blue-700"
+                        className="text-xs font-bold text-[#135BEC] transition-colors hover:text-blue-700"
                     >
                         Forgot Password?
                     </a>
@@ -165,7 +165,7 @@ export const LoginForm = () => {
                         aria-describedby={fieldErrors.password ? "password-error" : undefined}
                         autoComplete="current-password"
                         required
-                        className={`w-full rounded-xl border bg-slate-50 py-3 pl-11 pr-11 text-sm text-slate-900 shadow-sm transition-all placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 ${fieldErrors.password
+                        className={`w-full rounded-3xl border bg-[#F8FAFC] py-4 pl-12 pr-12 text-base text-slate-900 transition-all placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 ${fieldErrors.password
                             ? "border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-500/10"
                             : "border-slate-200"
                             }`}
@@ -212,7 +212,7 @@ export const LoginForm = () => {
             <button
                 type="submit"
                 disabled={isLoading}
-                className="relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:from-blue-700 hover:to-blue-800 hover:shadow-xl hover:shadow-blue-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
+                className="relative w-full overflow-hidden rounded-3xl bg-gradient-to-r from-[#135BEC] to-[#3B82F6] px-6 py-4 text-base font-bold text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-xl hover:shadow-blue-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
             >
                 {isLoading ? (
                     <span className="flex items-center justify-center gap-2">
@@ -228,20 +228,20 @@ export const LoginForm = () => {
                     <div className="w-full border-t border-slate-200" />
                 </div>
                 <div className="relative flex justify-center text-xs">
-                    <span className="bg-white px-4 font-medium text-slate-400">
-                        OR Continue With
+                    <span className="bg-white px-4 font-bold uppercase tracking-widest text-slate-400">
+                        or continue with
                     </span>
                 </div>
             </div>
 
             {/* Social login buttons */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
                 <button
                     type="button"
                     disabled
-                    className="inline-flex items-center justify-center gap-2.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex h-12 items-center justify-center gap-3 rounded-3xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 transition-all hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                    <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.76h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
                         <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
@@ -252,23 +252,23 @@ export const LoginForm = () => {
                 <button
                     type="button"
                     disabled
-                    className="inline-flex items-center justify-center gap-2.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex h-12 items-center justify-center gap-3 rounded-3xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 transition-all hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zm12.6 0H12.6V0H24v11.4z" />
+                    <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zm12.6 0H12.6V0H24v11.4z" fill="#2563EB" />
                     </svg>
                     Microsoft
                 </button>
             </div>
 
             {/* Sign up link */}
-            <p className="text-center text-sm text-slate-500">
+            <p className="text-center text-base text-slate-600">
                 Don&apos;t have an account?{" "}
                 <a
-                    href="/register"
-                    className="font-semibold text-blue-600 transition-colors hover:text-blue-700"
+                    href="/signup"
+                    className="font-bold text-[#135BEC] transition-colors hover:text-blue-700"
                 >
-                    Sign up
+                    Sign Up
                 </a>
             </p>
         </form>
