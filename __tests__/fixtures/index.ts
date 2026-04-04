@@ -11,3 +11,16 @@ export {
   buildTaskResponseDTO,
   resetFactoryCounter,
 } from "./factories/task.factory"
+
+export {
+  MOCK_REGISTER_DTO,
+  MOCK_APPROVE_USER_DTO,
+  MOCK_PENDING_USER,
+  MOCK_PENDING_USERS_LIST,
+} from "./auth.fixture"
+
+export {
+  buildRegisterDTO,
+  buildPendingUser,
+  resetAuthFactoryCounter,
+} from "./factories/auth.factory"
