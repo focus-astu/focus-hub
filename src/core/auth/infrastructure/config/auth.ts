@@ -6,8 +6,14 @@ import { mongodbAdapter } from "better-auth/adapters/mongodb"
 import { MongoClient } from "mongodb"
 import { ac, member, teacher, counselor, generalLeader, platformAdmin } from "./permissions"
 
-const client = new MongoClient(process.env.MONGODB_URI!)
-const db = client.db()
+const getMongoDb = () => {
+  const uri = process.env.MONGODB_URI
+  if (!uri) throw new Error("MONGODB_URI environment variable is not set")
+  const client = new MongoClient(uri)
+  return client.db()
+}
+
+const db = process.env.MONGODB_URI ? getMongoDb() : null!
 
 export const auth = betterAuth({
   database: mongodbAdapter(db),
@@ -59,7 +65,7 @@ export const auth = betterAuth({
       const email = ctx.body?.email
       if (!email) return
 
-      const user = await db.collection("user").findOne({ email })
+      const user = await getMongoDb().collection("user").findOne({ email })
       if (user && !user.approved) {
         throw new APIError("FORBIDDEN", {
           message: "Your account is pending admin approval",
@@ -72,7 +78,8 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (user) => {
-          const userCount = await db.collection("user").countDocuments()
+          const userDb = getMongoDb()
+          const userCount = await userDb.collection("user").countDocuments()
           if (userCount !== 1) return
 
           const internalHeaders = new Headers()
@@ -82,7 +89,7 @@ export const auth = betterAuth({
             headers: internalHeaders,
           })
 
-          await db.collection("user").updateOne(
+          await userDb.collection("user").updateOne(
             { _id: user.id as unknown as import("mongodb").ObjectId },
             { $set: { approved: true } },
           )

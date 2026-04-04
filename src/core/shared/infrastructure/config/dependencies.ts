@@ -22,7 +22,9 @@ export const createTask = createCreateTaskUseCase({ taskRepository, idGenerator 
 export const getTasks = createGetTasksUseCase({ taskRepository })
 
 // ─── Auth Feature ────────────────────────────────────────────
-const mongoClient = new MongoClient(process.env.MONGODB_URI!)
+const mongoClient = process.env.MONGODB_URI
+  ? new MongoClient(process.env.MONGODB_URI)
+  : null!
 const authRepository = createMongodbAuthRepository(mongoClient)
 
 export const approveUser = createApproveUserUseCase({ authRepository })
