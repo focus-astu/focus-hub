@@ -1,0 +1,61 @@
+---
+description: Mobile-first responsive design standards for all UI components and pages
+globs: "**/*.tsx"
+alwaysApply: false
+---
+
+# Mobile Responsive Design
+
+All UI must be **mobile-first** and fully responsive. Design for the smallest screen first, then enhance for larger breakpoints.
+
+## Tailwind Breakpoint Strategy
+
+Use Tailwind's mobile-first breakpoints — base styles target mobile, then layer up:
+
+```tsx
+// ✅ CORRECT — mobile-first
+<div className="px-4 py-6 sm:px-6 md:px-8 lg:px-12">
+  <h1 className="text-xl sm:text-2xl lg:text-3xl">Title</h1>
+</div>
+
+// ❌ WRONG — desktop-first, overriding down
+<div className="px-12 md:px-8 sm:px-6">
+```
+
+## Layout Rules
+
+- Use `flex-col` on mobile, switch to `flex-row` at `sm:` or `md:` breakpoints
+- Set `max-w-screen-xl mx-auto` on main content containers with horizontal padding (`px-4 sm:px-6 lg:px-8`)
+- Use CSS Grid with responsive columns: `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4`
+- Avoid fixed widths — use `w-full`, `max-w-`, and percentage-based sizing
+- Sidebars should collapse to a hamburger menu or bottom sheet on mobile (`hidden md:block`)
+
+## Typography
+
+- Base font size should be readable on mobile (minimum `text-sm` / 14px for body)
+- Scale headings with breakpoints: `text-lg sm:text-xl lg:text-2xl`
+- Line lengths: cap at `max-w-prose` for readability on wide screens
+
+## Touch Targets
+
+- All interactive elements must have a minimum touch target of 44x44px on mobile
+- Use `min-h-[44px] min-w-[44px]` or adequate padding (`p-3` minimum) on buttons and links
+- Ensure adequate spacing between tap targets (`gap-3` minimum in button groups)
+
+## Images & Media
+
+- Always use responsive images: `w-full h-auto` or `object-cover` with aspect-ratio containers
+- Use `aspect-video` or `aspect-square` for consistent media sizing
+- Lazy load off-screen images with `loading="lazy"`
+
+## Forms
+
+- Inputs should be `w-full` on mobile
+- Stack form fields vertically on mobile, allow side-by-side at `sm:` or wider
+- Use `text-base` (16px) on inputs to prevent iOS zoom on focus
+
+## Testing Mindset
+
+- Always visually verify layouts at 320px, 375px, 768px, 1024px, and 1440px widths
+- Ensure no horizontal scroll at any breakpoint
+- Navigation must be fully accessible on mobile (hamburger menu, swipe-friendly)

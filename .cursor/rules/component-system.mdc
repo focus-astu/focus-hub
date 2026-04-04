@@ -1,0 +1,49 @@
+---
+description: Component-driven development tiers and conventions for UI components
+globs: src/components/**/*.tsx,src/features/**/components/**/*.tsx
+alwaysApply: false
+---
+
+# Component System
+
+## Component Tiers
+
+| Tier | Location | Purpose | Example |
+|------|----------|---------|---------|
+| **UI Primitives** | `src/components/ui/` | Atomic, generic, highly reusable | Button, Input, Card |
+| **Composed** | `src/components/composed/` | Combinations of primitives | SearchBar, NavItem |
+| **Layouts** | `src/components/layouts/` | Structural shells | Sidebar, Header |
+| **Feature** | `src/features/*/components/` | Domain-specific UI | TaskCard, ProjectForm |
+
+## Component Directory Convention
+
+Each UI component gets its own directory:
+
+```
+src/components/ui/button/
+├── button.tsx           # Implementation
+├── button.types.ts      # TypeScript props/types
+└── index.ts             # Barrel export
+```
+
+## Promotion Rule
+
+When a feature component is used by **2 or more features**, promote it to `src/components/composed/`.
+
+## Frontend Feature Module Structure
+
+```
+src/features/[feature]/
+├── components/          # Feature-specific UI
+├── hooks/               # Feature-specific hooks
+├── actions/             # Server actions (delegate to use cases)
+├── types.ts             # Type aliases
+└── index.ts             # Barrel export
+```
+
+## Key Rules
+
+- Components should be **purely presentational** when possible
+- Feature components import types from `@/core/[feature]` barrel, never internal paths
+- Use shared UI primitives from `@/components/ui` before creating new ones
+- Server Actions live in `src/features/[feature]/actions/` and delegate to use cases — no business logic
