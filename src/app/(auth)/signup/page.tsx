@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic"
 import { CheckCircle } from "lucide-react"
 import { AuthHeroBg } from "@/features/auth/components"
+import { Logo } from "@/components/ui"
 
 const SignupForm = dynamic(
     () => import("@/features/auth/components/signup-form").then(m => ({ default: m.SignupForm })),
@@ -21,21 +22,7 @@ export default function SignupPage() {
             {/* Left Hero — fixed height, never scrolls */}
             <AuthHeroBg>
                 <div className="relative z-10 flex flex-col gap-6 px-12">
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-xl">
-                            <svg
-                                className="h-6 w-6 text-white"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                                aria-hidden="true"
-                            >
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                            </svg>
-                        </div>
-                        <span className="text-2xl font-bold tracking-tight text-white">
-                            Focus ASTU
-                        </span>
-                    </div>
+                    <Logo variant="full" size="md" inverted />
 
                     <h1 className="text-5xl font-black leading-tight tracking-tight text-white">
                         Join the Focus ASTU

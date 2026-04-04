@@ -11,6 +11,7 @@ import {
   Loader2,
   ArrowLeft,
 } from "lucide-react"
+import { Logo } from "@/components/ui"
 
 type VerifyState =
   | { status: "sent" }
@@ -246,7 +247,7 @@ export default function VerifyEmailPage() {
 
       {/* Footer */}
       <footer className="mt-12 flex w-full max-w-5xl flex-col items-center gap-4 border-t border-slate-100 bg-slate-50 px-4 pt-8 sm:flex-row sm:justify-between sm:px-8">
-        <span className="text-lg font-black text-blue-700">FOCUS</span>
+        <Logo variant="full" size="sm" />
         <nav className="flex gap-6" aria-label="Footer navigation">
           {["Privacy", "Terms", "Support", "About"].map((item) => (
             <Link

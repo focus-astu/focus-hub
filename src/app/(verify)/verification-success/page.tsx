@@ -7,6 +7,7 @@ import {
   Shield,
   ArrowRight,
 } from "lucide-react"
+import { Logo } from "@/components/ui"
 
 const DEFAULT_EMAIL = "email@astu.edu.et"
 
@@ -99,16 +100,16 @@ export default function VerificationSuccessPage() {
 
         {/* Branding anchor */}
         <div className="mt-6 flex items-center justify-center">
-          <span className="text-lg font-black text-blue-600 sm:text-xl">FOCUS Fellowship</span>
+          <Logo variant="full" size="sm" />
         </div>
       </div>
 
       {/* Footer */}
       <footer className="relative z-10 mt-12 flex w-full max-w-5xl flex-col items-center gap-4 border-t border-slate-100 bg-slate-50 px-4 pt-8 sm:flex-row sm:justify-between sm:px-8">
-        <div className="flex flex-col items-center gap-1 sm:items-start">
-          <span className="text-lg font-black text-blue-700">FOCUS Fellowship</span>
+        <div className="flex flex-col items-center gap-2 sm:items-start">
+          <Logo variant="full" size="sm" />
           <p className="text-xs text-slate-500">
-            &copy; {new Date().getFullYear()} FOCUS Fellowship. All Rights Reserved.
+            &copy; {new Date().getFullYear()} Focus ASTU Fellowship. All Rights Reserved.
           </p>
         </div>
         <nav className="flex gap-6" aria-label="Footer navigation">

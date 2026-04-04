@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import { Menu, X, ChevronRight, MapPin, Mail, Users, BookOpen, Mic2, Shield } from "lucide-react"
+import { Logo } from "@/components/ui"
 
 const NAV_LINKS = [
   { label: "About", href: "#about" },
@@ -68,10 +69,31 @@ const UPDATES = [
   },
 ]
 
-const FOOTER_NAV = ["About Us", "Our Teams", "Latest News", "Event Calendar"]
-const FOOTER_COMMUNITY = ["Join Fellowship", "Prayer Requests", "Donation Portal", "Alumni Network"]
+const FOOTER_NAV = [
+  { label: "About Us", href: "#about" },
+  { label: "Our Teams", href: "#teams" },
+  { label: "Latest News", href: "#updates" },
+  { label: "Event Calendar", href: "#updates" },
+]
+const FOOTER_COMMUNITY = [
+  { label: "Join Fellowship", href: "/signup" },
+  { label: "Prayer Requests", href: "#donate" },
+  { label: "Donation Portal", href: "#donate" },
+  { label: "Alumni Network", href: "#about" },
+]
 
 /* ───────────────────────── Header ───────────────────────── */
+
+const HEADER_HEIGHT = 64
+
+const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  if (!href.startsWith("#")) return
+  e.preventDefault()
+  const target = document.querySelector(href)
+  if (!target) return
+  const top = target.getBoundingClientRect().top + window.scrollY - HEADER_HEIGHT
+  window.scrollTo({ top, behavior: "smooth" })
+}
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -79,11 +101,8 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
-        <a href="/" className="flex items-center gap-2" aria-label="Focus ASTU Home">
-          <svg className="h-8 w-8 text-slate-900" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-          </svg>
-          <span className="text-xl font-extrabold uppercase tracking-tight text-slate-900">Focus ASTU</span>
+        <a href="/" aria-label="Focus ASTU Home">
+          <Logo variant="full" size="sm" />
         </a>
 
         <nav className="hidden items-center gap-8 lg:flex">
@@ -91,6 +110,7 @@ const Header = () => {
             <a
               key={link.label}
               href={link.href}
+              onClick={(e) => handleScrollTo(e, link.href)}
               className="text-sm font-semibold text-slate-900 transition-colors hover:text-blue-600"
             >
               {link.label}
@@ -121,7 +141,10 @@ const Header = () => {
               <a
                 key={link.label}
                 href={link.href}
-                onClick={() => setMobileOpen(false)}
+                onClick={(e) => {
+                  handleScrollTo(e, link.href)
+                  setMobileOpen(false)
+                }}
                 className="text-base font-semibold text-slate-900"
               >
                 {link.label}
@@ -370,12 +393,7 @@ const Footer = () => (
       <div className="grid gap-12 border-b border-slate-800 pb-12 sm:grid-cols-2 lg:grid-cols-4">
         {/* Col 1 */}
         <div className="flex flex-col gap-5">
-          <div className="flex items-center gap-2">
-            <svg className="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-            </svg>
-            <span className="text-lg font-black uppercase tracking-[0.1em] text-white">Focus ASTU</span>
-          </div>
+          <Logo variant="full" size="sm" inverted />
           <p className="text-sm leading-relaxed text-slate-400">
             A vibrant community of believers at Adama Science and Technology University.
           </p>
@@ -405,8 +423,14 @@ const Footer = () => (
           <h4 className="text-base font-bold text-white">Navigation</h4>
           <ul className="mt-6 flex flex-col gap-4">
             {FOOTER_NAV.map(item => (
-              <li key={item}>
-                <a href="#" className="text-sm text-slate-400 transition-colors hover:text-white">{item}</a>
+              <li key={item.label}>
+                <a
+                  href={item.href}
+                  onClick={(e) => handleScrollTo(e, item.href)}
+                  className="text-sm text-slate-400 transition-colors hover:text-white"
+                >
+                  {item.label}
+                </a>
               </li>
             ))}
           </ul>
@@ -417,8 +441,14 @@ const Footer = () => (
           <h4 className="text-base font-bold text-white">Community</h4>
           <ul className="mt-6 flex flex-col gap-4">
             {FOOTER_COMMUNITY.map(item => (
-              <li key={item}>
-                <a href="#" className="text-sm text-slate-400 transition-colors hover:text-white">{item}</a>
+              <li key={item.label}>
+                <a
+                  href={item.href}
+                  onClick={(e) => handleScrollTo(e, item.href)}
+                  className="text-sm text-slate-400 transition-colors hover:text-white"
+                >
+                  {item.label}
+                </a>
               </li>
             ))}
           </ul>
