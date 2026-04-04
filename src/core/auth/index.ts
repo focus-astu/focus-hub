@@ -12,3 +12,11 @@ export type {
   PendingUserResponseDTO,
   AuthRepository,
 } from "./application"
+
+export {
+  createApproveUserUseCase,
+  createRejectUserUseCase,
+  createGetPendingUsersUseCase,
+} from "./application"
+
+export { createMongodbAuthRepository } from "./infrastructure/repositories/mongodb-auth.repository"
