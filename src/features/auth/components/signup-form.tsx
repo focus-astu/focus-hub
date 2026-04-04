@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { authClient } from "@/lib/auth-client"
 
@@ -54,8 +54,6 @@ const yearOptions = [
     { value: "3", label: "3rd Year" },
     { value: "4", label: "4th Year" },
     { value: "5", label: "5th Year" },
-    { value: "6", label: "6th Year" },
-    { value: "7", label: "7th Year" },
 ]
 
 export const SignupForm = () => {
@@ -63,6 +61,19 @@ export const SignupForm = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [fieldErrors, setFieldErrors] = useState<SignupErrors>({})
     const [serverError, setServerError] = useState<string | null>(null)
+    const [selectedYear, setSelectedYear] = useState("")
+    const [yearOpen, setYearOpen] = useState(false)
+    const yearRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (yearRef.current && !yearRef.current.contains(e.target as Node)) {
+                setYearOpen(false)
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => document.removeEventListener("mousedown", handleClickOutside)
+    }, [])
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -229,29 +240,90 @@ export const SignupForm = () => {
             </div>
 
             {/* Year + Phone Number (side by side) */}
-            <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="flex min-w-0 flex-col gap-2">
                     <label
                         htmlFor="signup-year"
                         className="pl-1 text-sm font-semibold text-slate-700"
                     >
                         Year
                     </label>
-                    <select
-                        id="signup-year"
-                        name="year"
-                        aria-label="Year"
-                        aria-invalid={!!fieldErrors.year}
-                        aria-describedby={fieldErrors.year ? "year-error" : undefined}
-                        required
-                        className={`${inputBaseClass} appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236B7280%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:20px] bg-[right_12px_center] bg-no-repeat pr-10 ${fieldErrors.year ? inputErrorClass : inputDefaultClass}`}
-                    >
-                        {yearOptions.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                                {opt.label}
-                            </option>
-                        ))}
-                    </select>
+                    <input type="hidden" name="year" value={selectedYear} />
+                    <div ref={yearRef} className="relative">
+                        <button
+                            id="signup-year"
+                            type="button"
+                            role="combobox"
+                            aria-expanded={yearOpen}
+                            aria-haspopup="listbox"
+                            aria-controls="year-listbox"
+                            aria-label="Year"
+                            aria-invalid={!!fieldErrors.year}
+                            aria-describedby={fieldErrors.year ? "year-error" : undefined}
+                            onClick={() => setYearOpen(prev => !prev)}
+                            className={`${inputBaseClass} h-12 cursor-pointer pr-10 text-left ${
+                                fieldErrors.year ? inputErrorClass : inputDefaultClass
+                            } ${!selectedYear ? "text-slate-400" : ""}`}
+                        >
+                            {selectedYear
+                                ? yearOptions.find(o => o.value === selectedYear)?.label
+                                : "Select year"}
+                        </button>
+                        <svg
+                            className={`pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500 transition-transform ${yearOpen ? "rotate-180" : ""}`}
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={2}
+                            stroke="currentColor"
+                            aria-hidden="true"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+
+                        {yearOpen ? (
+                            <ul
+                                id="year-listbox"
+                                role="listbox"
+                                className="absolute left-0 top-full z-50 mt-1 w-full overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg"
+                            >
+                                {yearOptions.filter(o => o.value !== "").map((opt) => (
+                                    <li
+                                        key={opt.value}
+                                        role="option"
+                                        aria-selected={selectedYear === opt.value}
+                                        tabIndex={0}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter" || e.key === " ") {
+                                                setSelectedYear(opt.value)
+                                                setYearOpen(false)
+                                                setFieldErrors(prev => {
+                                                    const next = { ...prev }
+                                                    delete next.year
+                                                    return next
+                                                })
+                                            }
+                                        }}
+                                        onClick={() => {
+                                            setSelectedYear(opt.value)
+                                            setYearOpen(false)
+                                            setFieldErrors(prev => {
+                                                const next = { ...prev }
+                                                delete next.year
+                                                return next
+                                            })
+                                        }}
+                                        className={`cursor-pointer px-4 py-2.5 text-sm transition-colors hover:bg-blue-50 hover:text-blue-700 ${
+                                            selectedYear === opt.value
+                                                ? "bg-blue-50 font-semibold text-blue-700"
+                                                : "text-slate-700"
+                                        }`}
+                                    >
+                                        {opt.label}
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : null}
+                    </div>
                     {fieldErrors.year ? (
                         <p id="year-error" className="text-sm text-red-600" role="alert">
                             {fieldErrors.year}
@@ -259,7 +331,7 @@ export const SignupForm = () => {
                     ) : null}
                 </div>
 
-                <div className="flex flex-col gap-2">
+                <div className="flex min-w-0 flex-col gap-2">
                     <label
                         htmlFor="signup-phone"
                         className="pl-1 text-sm font-semibold text-slate-700"

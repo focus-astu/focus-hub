@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic"
 import { CheckCircle } from "lucide-react"
+import { AuthHeroBg } from "@/features/auth/components"
 
 const SignupForm = dynamic(
     () => import("@/features/auth/components/signup-form").then(m => ({ default: m.SignupForm })),
@@ -16,18 +17,9 @@ const features = [
 
 export default function SignupPage() {
     return (
-        <div className="flex min-h-screen bg-[#F6F6F8]">
-            {/* Left Hero */}
-            <div className="relative hidden w-1/2 overflow-hidden lg:flex lg:items-center lg:justify-center">
-                <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{
-                        backgroundImage:
-                            "url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&q=80')",
-                    }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-br from-[#135BEC]/90 via-[#135BEC]/70 to-purple-600/80" />
-
+        <div className="flex h-screen bg-[#F6F6F8]">
+            {/* Left Hero — fixed height, never scrolls */}
+            <AuthHeroBg>
                 <div className="relative z-10 flex flex-col gap-6 px-12">
                     <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-xl">
@@ -68,12 +60,12 @@ export default function SignupPage() {
                         ))}
                     </div>
                 </div>
-            </div>
+            </AuthHeroBg>
 
-            {/* Right Form Panel */}
+            {/* Right Panel — only this side scrolls */}
             <div className="flex w-full flex-col bg-white lg:w-1/2">
-                <div className="flex flex-1 flex-col overflow-y-auto">
-                    <div className="mx-auto w-full max-w-lg px-8 py-20 lg:px-10">
+                <div className="flex-1 overflow-y-auto">
+                    <div className="mx-auto w-full max-w-lg px-4 py-12 sm:px-8 sm:py-20 lg:px-10">
                         <div className="mb-8">
                             <h2 className="text-3xl font-bold tracking-tight text-slate-900">
                                 Create Your Account
@@ -121,7 +113,7 @@ export default function SignupPage() {
                     </div>
                 </div>
 
-                <div className="border-t border-slate-100 px-8 py-8">
+                <div className="shrink-0 border-t border-slate-100 px-8 py-6">
                     <p className="text-center text-xs text-slate-400">
                         &copy; {new Date().getFullYear()} Focus ASTU Fellowship. All rights reserved.
                     </p>
