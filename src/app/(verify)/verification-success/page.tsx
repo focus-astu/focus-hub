@@ -10,12 +10,9 @@ import {
 } from "lucide-react"
 import { Logo } from "@/components/ui"
 
-const DEFAULT_EMAIL = "email@astu.edu.et"
-
 const VerificationSuccessContent = () => {
   const searchParams = useSearchParams()
   const emailFromUrl = searchParams.get("email")
-  const displayEmail = emailFromUrl || DEFAULT_EMAIL
 
   return (
     <main className="flex min-h-screen w-full flex-col items-center bg-slate-50 px-4 py-12 sm:justify-center sm:px-6 sm:py-8 overflow-y-auto">
@@ -65,7 +62,7 @@ const VerificationSuccessContent = () => {
             {emailFromUrl && (
               <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2">
                 <CheckCircle className="h-4 w-4 text-emerald-600" />
-                <span className="text-sm font-semibold text-emerald-700">{displayEmail}</span>
+                <span className="text-sm font-semibold text-emerald-700">{emailFromUrl}</span>
               </div>
             )}
 

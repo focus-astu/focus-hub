@@ -1,38 +1,62 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { authClient } from "@/lib/auth-client"
+import { Suspense, useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Clock, LogOut, RefreshCw, CheckCircle } from "lucide-react"
 import { Logo } from "@/components/ui"
 import Link from "next/link"
 
 type CheckState = "idle" | "checking" | "still-pending" | "approved"
 
-export default function PendingApprovalPage() {
+const maskEmail = (email: string) => {
+  const [local, domain] = email.split("@")
+  if (!domain) return email
+  const visible = local.slice(0, 2)
+  return `${visible}${"•".repeat(Math.max(local.length - 2, 2))}@${domain}`
+}
+
+const PendingApprovalContent = () => {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [checkState, setCheckState] = useState<CheckState>("idle")
-  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [cooldown, setCooldown] = useState(0)
+
+  const email = searchParams.get("email")
+  const maskedEmail = email ? maskEmail(email) : null
+
+  useEffect(() => {
+    if (cooldown <= 0) return
+    const timer = setTimeout(() => setCooldown(c => c - 1), 1000)
+    return () => clearTimeout(timer)
+  }, [cooldown])
 
   const handleCheckStatus = async () => {
+    if (!email || cooldown > 0) return
     setCheckState("checking")
 
     try {
-      const { data: session } = await authClient.getSession()
-      if (session?.user) {
+      const res = await fetch("/api/v1/auth/check-approval", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await res.json()
+
+      if (data.approved) {
         setCheckState("approved")
-        setTimeout(() => router.push("/"), 1500)
+        setTimeout(() => router.push("/login"), 2000)
       } else {
         setCheckState("still-pending")
+        setCooldown(15)
       }
     } catch {
       setCheckState("still-pending")
+      setCooldown(15)
     }
   }
 
-  const handleLogout = async () => {
-    setIsLoggingOut(true)
-    await authClient.signOut()
+  const handleBackToLogin = () => {
     router.push("/login")
   }
 
@@ -58,7 +82,7 @@ export default function PendingApprovalPage() {
                   Account Approved!
                 </h1>
                 <p className="mt-4 max-w-sm text-center text-sm leading-relaxed text-emerald-600 sm:text-base">
-                  Your account has been approved. Redirecting you now…
+                  Your account has been approved. Redirecting you to login…
                 </p>
               </>
             ) : (
@@ -70,6 +94,12 @@ export default function PendingApprovalPage() {
                   Your email has been verified successfully. An administrator will review and
                   approve your account shortly. You&apos;ll be able to sign in once approved.
                 </p>
+
+                {maskedEmail ? (
+                  <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2">
+                    <span className="text-sm font-semibold text-blue-700">{maskedEmail}</span>
+                  </div>
+                ) : null}
 
                 {checkState === "still-pending" && (
                   <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-amber-50 px-4 py-2">
@@ -87,7 +117,7 @@ export default function PendingApprovalPage() {
                 <button
                   type="button"
                   onClick={handleCheckStatus}
-                  disabled={checkState === "checking"}
+                  disabled={checkState === "checking" || cooldown > 0 || !email}
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-500/30 transition-all hover:from-blue-700 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[0.98] disabled:opacity-50 sm:text-base"
                   tabIndex={0}
                   aria-label="Check approval status"
@@ -96,6 +126,11 @@ export default function PendingApprovalPage() {
                     <>
                       <RefreshCw className="h-4 w-4 animate-spin" />
                       Checking…
+                    </>
+                  ) : cooldown > 0 ? (
+                    <>
+                      <Clock className="h-4 w-4" />
+                      Check again in {cooldown}s
                     </>
                   ) : (
                     <>
@@ -107,23 +142,13 @@ export default function PendingApprovalPage() {
 
                 <button
                   type="button"
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-bold text-slate-700 transition-all hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 active:scale-[0.98] disabled:opacity-50 sm:text-base"
+                  onClick={handleBackToLogin}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-bold text-slate-700 transition-all hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 active:scale-[0.98] sm:text-base"
                   tabIndex={0}
-                  aria-label="Log out"
+                  aria-label="Back to login"
                 >
-                  {isLoggingOut ? (
-                    <>
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      Logging out…
-                    </>
-                  ) : (
-                    <>
-                      <LogOut className="h-4 w-4" />
-                      Log Out
-                    </>
-                  )}
+                  <LogOut className="h-4 w-4" />
+                  Back to Login
                 </button>
               </div>
             )}
@@ -155,5 +180,17 @@ export default function PendingApprovalPage() {
         </p>
       </footer>
     </main>
+  )
+}
+
+export default function PendingApprovalPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    }>
+      <PendingApprovalContent />
+    </Suspense>
   )
 }

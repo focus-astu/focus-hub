@@ -33,14 +33,14 @@ export const LoginForm = () => {
             const { data, error } = await authClient.signIn.email(
                 { email, password },
                 {
-                    onError: (ctx) => {
+                        onError: (ctx) => {
                         if (ctx.error.status === 403) {
                             if (ctx.error.message.includes("verify")) {
                                 setFormError(
                                     "Please verify your email first. Check your inbox.",
                                 )
                             } else if (ctx.error.message.includes("approval")) {
-                                router.push("/pending-approval")
+                                router.push(`/pending-approval?email=${encodeURIComponent(email)}`)
                             } else if (
                                 ctx.error.message.includes("banned") ||
                                 ctx.error.message.includes("suspended")
