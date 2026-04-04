@@ -1,0 +1,50 @@
+---
+description: Clean Architecture patterns and dependency rules for the focus-hub codebase
+alwaysApply: true
+---
+
+# Clean Architecture Rules
+
+This project follows **Clean Architecture** with feature-based module organization.
+
+## Dependency Rule
+
+Dependencies always point **inward**:
+
+- **Domain** depends on → nothing (zero framework imports)
+- **Application** depends on → Domain only
+- **Infrastructure** depends on → Application + Domain
+- **Presentation** depends on → Application + Domain (via dependency injection)
+
+Presentation and Infrastructure **never import each other directly** — they communicate through Application layer ports.
+
+## Feature Module Structure
+
+Every feature in `src/core/` owns its full backend stack:
+
+```
+src/core/[feature]/
+├── domain/           # Entities, enums, value objects (zero deps)
+├── application/
+│   ├── dtos/         # Input/output shapes for boundary crossing
+│   ├── ports/        # Repository interfaces (never implementations)
+│   └── use-cases/    # Single-purpose factory functions
+├── infrastructure/
+│   └── repositories/ # Implements ports from application layer
+└── index.ts          # Public API barrel — external code imports ONLY from here
+```
+
+## Key Patterns
+
+- **Entities are immutable** — methods return new instances
+- **Use cases are factory functions** that accept dependencies: `createXxxUseCase(deps) => async (dto) => result`
+- **API routes are thin controllers** — validate input, call use case, format output
+- **Server Actions delegate to use cases** — no business logic in actions
+- Feature modules **never import each other's infrastructure** — use `@/core/shared` for cross-feature needs
+- The **composition root** (`src/core/shared/infrastructure/config/dependencies.ts`) is the only place infrastructure meets application
+
+## Data Flow
+
+```
+User Action → Page/Component → Server Action or API Route → Use Case → Port ←→ Repository → Domain Entity → DTO Response → UI
+```

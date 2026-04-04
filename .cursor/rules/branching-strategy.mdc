@@ -1,0 +1,42 @@
+---
+description: Git branching strategy and PR workflow for team collaboration
+alwaysApply: true
+---
+
+# Branching & PR Strategy
+
+## Branch Hierarchy
+
+| Branch | Purpose | Merges Into |
+|--------|---------|-------------|
+| `main` | Production-ready | — |
+| `front-main` | Frontend integration staging | `main` |
+| `back-main` | Backend integration staging | `main` |
+| `front-main-[feature]` | Frontend feature work | `front-main` |
+| `back-main-[feature]` | Backend feature work | `back-main` |
+| `integration-[feature]` | Cross-team features | `main` |
+| `hotfix-[issue]` | Critical production fixes | `main` |
+
+## Branch Naming
+
+Use `<team>-main-<feature-name>` in lowercase kebab-case. Be descriptive and include the domain area.
+
+```
+front-main-task-board
+back-main-task-crud-api
+```
+
+## PR Guidelines
+
+- PRs target team integration branches (`front-main` or `back-main`), not `main` directly
+- Keep PRs small: aim for <500 lines changed
+- Require 1 approval for team branches, 2 approvals for `main`
+- Squash merge for clean history
+- All CI checks must pass
+
+## Cross-Team Features
+
+1. Agree on the contract first — shared DTOs and ports in `src/core/[feature]/application/`
+2. Backend builds against the contract, frontend builds with mock data
+3. Both merge independently into team branches
+4. Integration tests verify compatibility before merging to `main`

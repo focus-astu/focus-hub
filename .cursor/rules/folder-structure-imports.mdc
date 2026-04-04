@@ -1,0 +1,42 @@
+---
+description: Folder structure conventions and import path rules for focus-hub
+alwaysApply: true
+---
+
+# Folder Structure & Import Rules
+
+## Import Path Aliases
+
+Always use `@/` path aliases — never relative paths that escape the current feature module.
+
+```typescript
+import { Task, Priority } from "@/core/tasks"             // feature barrel
+import type { CreateTaskDTO } from "@/core/tasks"          // types from barrel
+import { DomainError } from "@/core/shared"                // shared cross-cutting
+import { Button } from "@/components/ui"                   // UI primitives
+import { TaskList } from "@/features/tasks"                // frontend feature
+import { cn } from "@/lib/utils"                           // utilities
+import type { ApiResponse } from "@/types"                 // shared types
+```
+
+## Import Rules by Layer
+
+| From | Can Import | Cannot Import |
+|------|-----------|---------------|
+| API Route | `@/core/shared/.../dependencies` + `@/core/[feature]` (types) | Feature infrastructure directly |
+| Frontend Feature | `@/core/[feature]` (types) + dependencies (actions) | Another feature's internals |
+| Use Case | Own feature's domain + `@/core/shared` | Other features, infrastructure |
+| Repository | Own feature's domain + application | Other features |
+| Feature A | **Never** Feature B's infrastructure | Use `@/core/shared` instead |
+
+## Barrel Exports
+
+Every module needs an `index.ts` barrel export. External consumers import **only** from the barrel, never from internal paths.
+
+```typescript
+// ✅ CORRECT
+import { Task } from "@/core/tasks"
+
+// ❌ WRONG — importing internal path
+import { Task } from "@/core/tasks/domain/task.entity"
+```
