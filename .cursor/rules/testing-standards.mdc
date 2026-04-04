@@ -1,0 +1,68 @@
+---
+description: Testing conventions, fixture rules, and test file organization
+globs: __tests__/**/*.ts,__tests__/**/*.tsx
+alwaysApply: false
+---
+
+# Testing Standards
+
+## Directory Structure
+
+All tests live in `__tests__/` at the project root, mirroring source structure:
+
+```
+__tests__/
+├── fixtures/           # ALL test data lives here
+│   ├── *.fixture.ts    # Static test literals (MOCK_ prefix)
+│   ├── factories/      # Dynamic builders (build prefix)
+│   └── index.ts        # Barrel export
+├── unit/
+│   ├── core/domain/    # Entity tests
+│   └── core/use-cases/ # Use case tests
+├── integration/
+│   ├── api/            # API route tests
+│   └── features/       # Feature integration tests
+└── e2e/                # End-to-end tests
+```
+
+## Test Data: Always Use Fixtures
+
+**All mock data MUST be defined in `__tests__/fixtures/` and imported.** Never hardcode test data inline.
+
+```typescript
+// ✅ CORRECT
+import { MOCK_CREATE_TASK_DTO } from "@/__tests__/fixtures"
+it("should create a task", async () => {
+  const result = await createTask(MOCK_CREATE_TASK_DTO)
+  expect(result.title).toBe(MOCK_CREATE_TASK_DTO.title)
+})
+
+// ❌ WRONG — hardcoded test data
+it("should create a task", async () => {
+  const result = await createTask({ title: "Some task", priority: "high" })
+})
+```
+
+## Fixture Conventions
+
+- **Static fixtures** (`*.fixture.ts`): `MOCK_` prefix for stable known data
+- **Factory functions** (`factories/*.factory.ts`): `build` prefix with override support
+- **Barrel export**: All fixtures export from `__tests__/fixtures/index.ts`
+
+## Test Naming Convention
+
+```
+[entity].[layer].test.ts
+
+Examples: task.entity.test.ts, create-task.use-case.test.ts, tasks-api.integration.test.ts
+```
+
+## What to Test by Layer
+
+| Layer | Focus | Tool |
+|-------|-------|------|
+| Domain Entities | Business rules, state transitions | Jest |
+| Use Cases | Orchestration with mocked ports | Jest |
+| API Routes | Request/response, status codes | Jest + Supertest |
+| Components | Rendering, user interactions | React Testing Library |
+| E2E | Critical user journeys | Playwright/Cypress |
