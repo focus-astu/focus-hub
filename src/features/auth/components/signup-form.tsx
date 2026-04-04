@@ -13,6 +13,7 @@ const validateSignupForm = (data: {
     email: string
     password: string
     year: string
+    universityId: string
     phoneNumber: string
     department: string
 }): { valid: boolean; errors: SignupErrors } => {
@@ -38,6 +39,10 @@ const validateSignupForm = (data: {
 
     if (!data.year) {
         errors.year = "Year is required"
+    }
+
+    if (!data.universityId.trim()) {
+        errors.universityId = "University ID is required"
     }
 
     if (!data.phoneNumber.trim()) {
@@ -85,6 +90,7 @@ export const SignupForm = () => {
         const email = (form.get("email") as string) ?? ""
         const password = (form.get("password") as string) ?? ""
         const year = (form.get("year") as string) ?? ""
+        const universityId = (form.get("universityId") as string) ?? ""
         const phoneNumber = (form.get("phoneNumber") as string) ?? ""
         const department = (form.get("department") as string) ?? ""
 
@@ -93,6 +99,7 @@ export const SignupForm = () => {
             email,
             password,
             year,
+            universityId,
             phoneNumber,
             department,
         })
@@ -109,6 +116,9 @@ export const SignupForm = () => {
                 name: fullName,
                 email,
                 password,
+                universityId,
+                year: parseInt(year, 10),
+                department: department || undefined,
             }, {
                 onError: (ctx) => {
                     setServerError(ctx.error.message || "Something went wrong")
@@ -333,26 +343,25 @@ export const SignupForm = () => {
 
                 <div className="flex min-w-0 flex-col gap-2">
                     <label
-                        htmlFor="signup-phone"
+                        htmlFor="signup-universityId"
                         className="pl-1 text-sm font-semibold text-slate-700"
                     >
-                        Phone Number (required)
+                        University ID
                     </label>
                     <input
-                        id="signup-phone"
-                        name="phoneNumber"
-                        type="tel"
-                        placeholder="+251 ..."
-                        aria-label="Phone number"
-                        aria-invalid={!!fieldErrors.phoneNumber}
-                        aria-describedby={fieldErrors.phoneNumber ? "phone-error" : undefined}
-                        autoComplete="tel"
+                        id="signup-universityId"
+                        name="universityId"
+                        type="text"
+                        placeholder="UGR/12345/15"
+                        aria-label="University ID"
+                        aria-invalid={!!fieldErrors.universityId}
+                        aria-describedby={fieldErrors.universityId ? "universityId-error" : undefined}
                         required
-                        className={`${inputBaseClass} ${fieldErrors.phoneNumber ? inputErrorClass : inputDefaultClass}`}
+                        className={`${inputBaseClass} ${fieldErrors.universityId ? inputErrorClass : inputDefaultClass}`}
                     />
-                    {fieldErrors.phoneNumber ? (
-                        <p id="phone-error" className="text-sm text-red-600" role="alert">
-                            {fieldErrors.phoneNumber}
+                    {fieldErrors.universityId ? (
+                        <p id="universityId-error" className="text-sm text-red-600" role="alert">
+                            {fieldErrors.universityId}
                         </p>
                     ) : null}
                 </div>
