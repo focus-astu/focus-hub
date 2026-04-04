@@ -1,3 +1,8 @@
+export type LoginFormData = {
+  email: string
+  password: string
+}
+
 export type RegistrationFormValues = {
   fullName: string
   email: string
