@@ -3,11 +3,25 @@ import { organization, admin } from "better-auth/plugins"
 import { nextCookies } from "better-auth/next-js"
 import { createAuthMiddleware, APIError } from "better-auth/api"
 import { mongodbAdapter } from "better-auth/adapters/mongodb"
-import { MongoClient } from "mongodb"
+import { MongoClient, ObjectId, type Db } from "mongodb"
 import { ac, member, teacher, counselor, generalLeader, platformAdmin } from "./permissions"
 
-const client = new MongoClient(process.env.MONGODB_URI!)
-const db = client.db()
+let _client: MongoClient | null = null
+let _db: Db | null = null
+
+const getDb = () => {
+  if (!_db) {
+    const uri = process.env.MONGODB_URI
+    if (!uri) throw new Error("MONGODB_URI environment variable is not set")
+    _client = new MongoClient(uri)
+    _db = _client.db()
+  }
+  return _db
+}
+
+const db = process.env.MONGODB_URI ? getDb() : null!
+
+const generateId = () => crypto.randomUUID()
 
 export const auth = betterAuth({
   database: mongodbAdapter(db),
@@ -59,8 +73,10 @@ export const auth = betterAuth({
       const email = ctx.body?.email
       if (!email) return
 
-      const user = await db.collection("user").findOne({ email })
-      if (user && !user.approved) {
+      const user = await getDb().collection("user").findOne({ email })
+      if (!user) return
+      if (!user.emailVerified) return
+      if (!user.approved) {
         throw new APIError("FORBIDDEN", {
           message: "Your account is pending admin approval",
         })
@@ -72,18 +88,16 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (user) => {
-          const userCount = await db.collection("user").countDocuments()
+          const userDb = getDb()
+          const userCount = await userDb.collection("user").countDocuments()
           if (userCount !== 1) return
 
-          await auth.api.setRole({
-            body: { userId: user.id, role: "admin" },
-          })
-
-          await db.collection("user").updateOne(
-            { _id: user.id },
-            { $set: { approved: true } },
+          await userDb.collection("user").updateOne(
+            { _id: new ObjectId(user.id) },
+            { $set: { role: "admin", approved: true } },
           )
 
+          const now = new Date()
           const defaultOrgs = [
             { name: "Teachers", slug: "teachers" },
             { name: "Counselors", slug: "counselors" },
@@ -92,14 +106,25 @@ export const auth = betterAuth({
           ]
 
           for (const org of defaultOrgs) {
-            await auth.api.createOrganization({
-              body: {
-                name: org.name,
-                slug: org.slug,
-                userId: user.id,
-              },
+            const orgId = generateId()
+            await userDb.collection("organization").insertOne({
+              id: orgId,
+              name: org.name,
+              slug: org.slug,
+              logo: null,
+              metadata: null,
+              createdAt: now,
+            })
+            await userDb.collection("member").insertOne({
+              id: generateId(),
+              organizationId: orgId,
+              userId: user.id,
+              role: "owner",
+              createdAt: now,
             })
           }
+
+          console.log(`[AUTH] First user ${user.email} promoted to admin with default organizations`)
         },
       },
     },

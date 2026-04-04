@@ -1,5 +1,6 @@
 "use client"
 
+import { Suspense } from "react"
 import { authClient } from "@/lib/auth-client"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
@@ -19,18 +20,24 @@ type VerifyState =
   | { status: "success" }
   | { status: "error"; message: string }
 
-const DEFAULT_EMAIL = "email@astu.edu.et"
+const maskEmail = (email: string) => {
+  const [local, domain] = email.split("@")
+  if (!domain) return email
+  const visible = local.slice(0, 2)
+  return `${visible}${"•".repeat(Math.max(local.length - 2, 2))}@${domain}`
+}
 
-export default function VerifyEmailPage() {
+const VerifyEmailContent = () => {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [state, setState] = useState<VerifyState>({ status: "sent" })
   const [resendState, setResendState] = useState<"idle" | "sending" | "sent" | "error">("idle")
   const [resendError, setResendError] = useState("")
+  const [cooldown, setCooldown] = useState(0)
 
   const token = searchParams.get("token")
   const emailFromUrl = searchParams.get("email")
-  const displayEmail = emailFromUrl || DEFAULT_EMAIL
+  const displayEmail = emailFromUrl ? maskEmail(emailFromUrl) : null
 
   const verifyToken = useCallback(async (t: string) => {
     setState({ status: "verifying" })
@@ -65,13 +72,19 @@ export default function VerifyEmailPage() {
     }
   }, [state.status, router, emailFromUrl])
 
+  useEffect(() => {
+    if (cooldown <= 0) return
+    const timer = setTimeout(() => setCooldown(c => c - 1), 1000)
+    return () => clearTimeout(timer)
+  }, [cooldown])
+
   const handleResend = async () => {
-    if (!displayEmail) return
+    if (!emailFromUrl || cooldown > 0) return
     setResendState("sending")
     setResendError("")
 
     const { error } = await authClient.sendVerificationEmail({
-      email: displayEmail,
+      email: emailFromUrl,
       callbackURL: "/verify-email",
     })
 
@@ -80,6 +93,7 @@ export default function VerifyEmailPage() {
       setResendError(error.message ?? "Failed to resend. Please try again.")
     } else {
       setResendState("sent")
+      setCooldown(60)
     }
   }
 
@@ -108,11 +122,12 @@ export default function VerifyEmailPage() {
                 We&apos;ve sent a verification link to your email address. Please click the link to activate your account.
               </p>
 
-              {/* Email display */}
-              <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2">
-                <Mail className="h-4 w-4 text-blue-600" />
-                <span className="text-sm font-semibold text-blue-700">{displayEmail}</span>
-              </div>
+              {displayEmail ? (
+                <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2">
+                  <Mail className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm font-semibold text-blue-700">{displayEmail}</span>
+                </div>
+              ) : null}
 
               {/* Back to Login button */}
               <Link
@@ -131,7 +146,7 @@ export default function VerifyEmailPage() {
                   <button
                     type="button"
                     onClick={handleResend}
-                    disabled={resendState === "sending"}
+                    disabled={resendState === "sending" || cooldown > 0 || !emailFromUrl}
                     className="font-bold text-blue-600 transition-colors hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50"
                     tabIndex={0}
                     aria-label="Resend verification link"
@@ -141,6 +156,8 @@ export default function VerifyEmailPage() {
                         <Loader2 className="h-3.5 w-3.5 animate-spin" />
                         Sending…
                       </span>
+                    ) : cooldown > 0 ? (
+                      `Resend in ${cooldown}s`
                     ) : (
                       "Resend link"
                     )}
@@ -197,7 +214,7 @@ export default function VerifyEmailPage() {
                 <button
                   type="button"
                   onClick={handleResend}
-                  disabled={resendState === "sending"}
+                  disabled={resendState === "sending" || cooldown > 0 || !emailFromUrl}
                   className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-500/30 transition-all hover:from-blue-700 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-[0.98] disabled:opacity-50 sm:text-base"
                   tabIndex={0}
                   aria-label="Resend verification email"
@@ -207,6 +224,8 @@ export default function VerifyEmailPage() {
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Sending…
                     </span>
+                  ) : cooldown > 0 ? (
+                    `Resend in ${cooldown}s`
                   ) : (
                     "Resend Verification Email"
                   )}
@@ -266,5 +285,17 @@ export default function VerifyEmailPage() {
         </p>
       </footer>
     </main>
+  )
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
   )
 }
