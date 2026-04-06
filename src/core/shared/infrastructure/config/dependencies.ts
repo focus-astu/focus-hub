@@ -1,4 +1,5 @@
 import { cryptoIdGenerator } from "@/core/shared/infrastructure/adapters/crypto-id-generator"
+import { createNodemailerEmailService } from "@/core/shared/infrastructure/email/nodemailer-email.service"
 import {
   createCreateTaskUseCase,
   createGetTasksUseCase,
@@ -14,6 +15,7 @@ import { MongoClient } from "mongodb"
 
 // ─── Shared Infrastructure ───────────────────────────────────
 const idGenerator = cryptoIdGenerator
+export const emailService = createNodemailerEmailService()
 
 // ─── Tasks Feature ───────────────────────────────────────────
 const taskRepository = createInMemoryTaskRepository()
@@ -27,6 +29,6 @@ const mongoClient = process.env.MONGODB_URI
   : null!
 const authRepository = createMongodbAuthRepository(mongoClient)
 
-export const approveUser = createApproveUserUseCase({ authRepository })
+export const approveUser = createApproveUserUseCase({ authRepository, emailService })
 export const rejectUser = createRejectUserUseCase({ authRepository })
 export const getPendingUsers = createGetPendingUsersUseCase({ authRepository })

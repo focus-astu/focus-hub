@@ -43,13 +43,14 @@ export const POST = async (request: NextRequest) => {
       )
     }
 
-    type OrgRole = "member" | "admin" | "owner" | "teacher" | "counselor" | "generalLeader"
-
     const body = await request.json() as {
       organizationId: string
       userId: string
-      role: OrgRole
+      role: string
     }
+
+    const validRoles = ["member", "admin", "owner", "teacher", "counselor", "generalLeader"] as const
+    type OrgRole = typeof validRoles[number]
 
     if (!body.organizationId || !body.userId || !body.role) {
       return NextResponse.json(
@@ -58,11 +59,18 @@ export const POST = async (request: NextRequest) => {
       )
     }
 
+    if (!validRoles.includes(body.role as OrgRole)) {
+      return NextResponse.json(
+        { error: `Invalid role. Must be one of: ${validRoles.join(", ")}` },
+        { status: 400 },
+      )
+    }
+
     await auth.api.addMember({
       body: {
         organizationId: body.organizationId,
         userId: body.userId,
-        role: body.role,
+        role: body.role as OrgRole,
       },
     })
 
