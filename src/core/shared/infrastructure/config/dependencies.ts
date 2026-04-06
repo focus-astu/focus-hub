@@ -9,8 +9,17 @@ import {
   createApproveUserUseCase,
   createRejectUserUseCase,
   createGetPendingUsersUseCase,
+  createGetAllUsersUseCase,
+  createChangeRoleUseCase,
   createMongodbAuthRepository,
 } from "@/core/auth"
+import {
+  createCreateNotificationUseCase,
+  createGetUserNotificationsUseCase,
+  createMarkNotificationReadUseCase,
+  createMarkAllNotificationsReadUseCase,
+  createMongodbNotificationRepository,
+} from "@/core/notifications"
 import { MongoClient } from "mongodb"
 
 // ─── Shared Infrastructure ───────────────────────────────────
@@ -23,12 +32,32 @@ const taskRepository = createInMemoryTaskRepository()
 export const createTask = createCreateTaskUseCase({ taskRepository, idGenerator })
 export const getTasks = createGetTasksUseCase({ taskRepository })
 
-// ─── Auth Feature ────────────────────────────────────────────
+// ─── MongoDB Client ──────────────────────────────────────────
 const mongoClient = process.env.MONGODB_URI
   ? new MongoClient(process.env.MONGODB_URI)
   : null!
+
+// ─── Notifications Feature ───────────────────────────────────
+const notificationRepository = createMongodbNotificationRepository(mongoClient)
+
+export const createNotification = createCreateNotificationUseCase({ notificationRepository })
+export const getUserNotifications = createGetUserNotificationsUseCase({ notificationRepository })
+export const markNotificationRead = createMarkNotificationReadUseCase({ notificationRepository })
+export const markAllNotificationsRead = createMarkAllNotificationsReadUseCase({ notificationRepository })
+
+export const getUnreadNotificationCount = async (userId: string) => {
+  return notificationRepository.getUnreadCount(userId)
+}
+
+// ─── Auth Feature ────────────────────────────────────────────
 const authRepository = createMongodbAuthRepository(mongoClient)
 
 export const approveUser = createApproveUserUseCase({ authRepository, emailService })
 export const rejectUser = createRejectUserUseCase({ authRepository })
 export const getPendingUsers = createGetPendingUsersUseCase({ authRepository })
+export const getAllUsers = createGetAllUsersUseCase({ authRepository })
+export const changeRole = createChangeRoleUseCase({
+  authRepository,
+  notificationRepository,
+  mongoClient,
+})

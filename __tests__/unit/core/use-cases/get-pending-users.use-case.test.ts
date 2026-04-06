@@ -10,10 +10,12 @@ describe("GetPendingUsers Use Case", () => {
   beforeEach(() => {
     mockAuthRepository = {
       getPendingUsers: async () => MOCK_PENDING_USERS_LIST,
+      getAllApprovedUsers: async () => [],
       approveUser: async () => {},
       rejectUser: async () => {},
       isUserApproved: async () => false,
       getUserById: async () => MOCK_PENDING_USER,
+      isOwnerOfOrg: async () => false,
     }
 
     getPendingUsers = createGetPendingUsersUseCase({
