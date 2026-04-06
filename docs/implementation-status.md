@@ -14,6 +14,8 @@ This document tracks every feature that has been fully implemented in Focus Hub,
 | Email verification | `requireEmailVerification: true`, `sendOnSignUp`, custom HTML template via nodemailer | `auth.ts`, `email-verification.template.ts` |
 | First-user auto-admin | First registered user is promoted to `role: "admin"` and `approved: true`, with 4 default organizations seeded | `auth.ts` (databaseHooks) |
 | Login guard (email + approval) | Middleware blocks sign-in if email not verified (defers to BetterAuth) or not approved (custom FORBIDDEN) | `auth.ts` (hooks.before) |
+| Password reset | `sendResetPassword` callback in `emailAndPassword` config sends branded reset email via nodemailer | `auth.ts`, `password-reset.template.ts` |
+| Signup duplicate detection | `before` hook rejects sign-up with existing email; unique index on `user.email` | `auth.ts` (hooks.before) |
 | Organization plugin | Custom access control with roles: member, teacher, counselor, generalLeader, platformAdmin | `permissions.ts`, `auth.ts` |
 | Admin plugin | BetterAuth admin plugin enabled for role management | `auth.ts` |
 
@@ -44,6 +46,7 @@ This document tracks every feature that has been fully implemented in Focus Hub,
 | Email layout template | Branded Focus ASTU HTML wrapper (header, footer) | `templates/layout.template.ts` |
 | Verification template | Props: `userName`, `verificationUrl` — verify CTA + fallback link | `templates/email-verification.template.ts` |
 | Account approved template | Props: `userName`, `loginUrl` — approval notification + sign-in CTA | `templates/account-approved.template.ts` |
+| Password reset template | Props: `userName`, `resetUrl` — reset CTA + expiry warning + safety note | `templates/password-reset.template.ts` |
 
 ### Tasks Domain (In-Memory)
 
@@ -97,6 +100,8 @@ This document tracks every feature that has been fully implemented in Focus Hub,
 | Signup | `/signup` | Registration form with universityId, year, department, signs out stale sessions | `src/app/(auth)/signup/page.tsx`, `signup-form.tsx` |
 | Verify email | `/verify-email` | Token verification, resend with cooldown, masked email display | `src/app/(verify)/verify-email/page.tsx` |
 | Verification success | `/verification-success` | Post-verify confirmation with "pending review" messaging | `src/app/(verify)/verification-success/page.tsx` |
+| Forgot password | `/forgot-password` | Email form, `requestPasswordReset`, success state with masked email, retry flow | `src/app/(auth)/forgot-password/page.tsx` |
+| Reset password | `/reset-password` | Token validation, new password + confirm inputs, auto-redirect to login on success | `src/app/(auth)/reset-password/page.tsx` |
 | Pending approval | `/pending-approval` | Polls `/api/v1/auth/check-approval` directly from DB, 15s cooldown | `src/app/(auth)/pending-approval/page.tsx` |
 | Dashboard | `/dashboard` | Coming Soon placeholder with session check, logout | `src/app/(dashboard)/dashboard/page.tsx` |
 | Admin users | `/admin/users` | Pending user table with approve/reject actions | `src/app/(dashboard)/admin/users/page.tsx` |
@@ -165,6 +170,5 @@ This document tracks every feature that has been fully implemented in Focus Hub,
 | Task API authentication | `/api/v1/tasks` has no auth guard |
 | MongoDB task repository | Currently in-memory only |
 | Route middleware | No `middleware.ts` — protected routes rely on client-side redirects |
-| Password reset flow | No forgot-password implementation |
 | Google OAuth | Button present but disabled |
 | Footer links | `/privacy`, `/terms`, `/support`, `/about` will 404 |
