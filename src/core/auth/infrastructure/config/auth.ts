@@ -17,6 +17,7 @@ const getDb = () => {
     if (!uri) throw new Error("MONGODB_URI environment variable is not set")
     _client = new MongoClient(uri)
     _db = _client.db()
+    _db.collection("user").createIndex({ email: 1 }, { unique: true }).catch(() => {})
   }
   return _db
 }
@@ -91,18 +92,29 @@ export const auth = betterAuth({
 
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
-      if (ctx.path !== "/sign-in/email") return
+      if (ctx.path === "/sign-up/email") {
+        const email = ctx.body?.email
+        if (!email) return
+        const existing = await getDb().collection("user").findOne({ email })
+        if (existing) {
+          throw new APIError("UNPROCESSABLE_ENTITY", {
+            message: "An account with this email already exists",
+          })
+        }
+        return
+      }
 
-      const email = ctx.body?.email
-      if (!email) return
-
-      const user = await getDb().collection("user").findOne({ email })
-      if (!user) return
-      if (!user.emailVerified) return
-      if (!user.approved) {
-        throw new APIError("FORBIDDEN", {
-          message: "Your account is pending admin approval",
-        })
+      if (ctx.path === "/sign-in/email") {
+        const email = ctx.body?.email
+        if (!email) return
+        const user = await getDb().collection("user").findOne({ email })
+        if (!user) return
+        if (!user.emailVerified) return
+        if (!user.approved) {
+          throw new APIError("FORBIDDEN", {
+            message: "Your account is pending admin approval",
+          })
+        }
       }
     }),
   },
