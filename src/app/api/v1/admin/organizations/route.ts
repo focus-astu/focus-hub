@@ -49,9 +49,19 @@ export const POST = async (request: NextRequest) => {
       role: string
     }
 
+    const validRoles = ["member", "admin", "owner", "teacher", "counselor", "generalLeader"] as const
+    type OrgRole = typeof validRoles[number]
+
     if (!body.organizationId || !body.userId || !body.role) {
       return NextResponse.json(
         { error: "Missing required fields: organizationId, userId, role" },
+        { status: 400 },
+      )
+    }
+
+    if (!validRoles.includes(body.role as OrgRole)) {
+      return NextResponse.json(
+        { error: `Invalid role. Must be one of: ${validRoles.join(", ")}` },
         { status: 400 },
       )
     }
@@ -60,7 +70,7 @@ export const POST = async (request: NextRequest) => {
       body: {
         organizationId: body.organizationId,
         userId: body.userId,
-        role: body.role,
+        role: body.role as OrgRole,
       },
     })
 
