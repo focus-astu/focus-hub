@@ -7,6 +7,7 @@ import { MongoClient, ObjectId, type Db } from "mongodb"
 import { ac, member, teacher, counselor, generalLeader, platformAdmin } from "./permissions"
 import { emailService } from "@/core/shared/infrastructure/config/dependencies"
 import { emailVerificationTemplate } from "@/core/shared/infrastructure/email/templates/email-verification.template"
+import { passwordResetTemplate } from "@/core/shared/infrastructure/email/templates/password-reset.template"
 
 let _client: MongoClient | null = null
 let _db: Db | null = null
@@ -58,6 +59,17 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
+    sendResetPassword: async ({ user, url }) => {
+      const html = passwordResetTemplate({
+        userName: user.name,
+        resetUrl: url,
+      })
+      await emailService.send({
+        to: user.email,
+        subject: "Reset your Focus ASTU password",
+        html,
+      })
+    },
   },
 
   emailVerification: {
