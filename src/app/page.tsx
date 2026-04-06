@@ -169,7 +169,7 @@ const HeroSection = () => (
   <section className="overflow-hidden bg-white px-6 py-24 lg:px-8 lg:py-32">
     <div className="mx-auto flex max-w-7xl flex-col items-center gap-12 lg:flex-row lg:gap-12">
       <div className="flex flex-1 flex-col gap-6">
-        <h1 className="text-5xl font-black leading-[1em] tracking-tight text-slate-900 lg:text-7xl">
+        <h1 className="text-3xl font-black leading-[1.1em] tracking-tight text-slate-900 sm:text-5xl lg:text-7xl">
           Building
           <br />
           Spiritually
@@ -183,16 +183,16 @@ const HeroSection = () => (
         <p className="max-w-xl text-lg leading-relaxed text-slate-600 lg:text-xl">
           A Christ-centered student fellowship at Adama Science and Technology University dedicated to nurturing faith, leadership, and academic excellence.
         </p>
-        <div className="flex flex-wrap gap-4 pt-4">
+        <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:flex-wrap sm:gap-4">
           <a
             href="/signup"
-            className="rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-8 py-4 text-lg font-bold text-white shadow-lg shadow-black/10 transition-shadow hover:shadow-xl"
+            className="rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-8 py-4 text-center text-base font-bold text-white shadow-lg shadow-black/10 transition-shadow hover:shadow-xl sm:text-lg"
           >
             Join the Community
           </a>
           <a
             href="/login"
-            className="rounded-3xl border-2 border-slate-200 px-8 py-4 text-lg font-bold text-slate-900 transition-colors hover:border-slate-300 hover:bg-slate-50"
+            className="rounded-3xl border-2 border-slate-200 px-8 py-4 text-center text-base font-bold text-slate-900 transition-colors hover:border-slate-300 hover:bg-slate-50 sm:text-lg"
           >
             Login
           </a>
@@ -225,7 +225,7 @@ const AboutSection = () => (
       <p className="text-sm font-bold uppercase tracking-[0.1em] text-indigo-600">
         Our Mission
       </p>
-      <h2 className="mt-4 text-4xl font-bold text-slate-900">
+      <h2 className="mt-4 text-2xl font-bold text-slate-900 sm:text-4xl">
         About Our Fellowship
       </h2>
       <p className="mt-6 text-lg leading-loose text-slate-700 lg:text-xl">
@@ -241,7 +241,7 @@ const TeamsSection = () => (
   <section id="teams" className="bg-white px-6 py-24 lg:px-8">
     <div className="mx-auto max-w-7xl">
       <div className="text-center">
-        <h2 className="text-4xl font-extrabold text-slate-900 lg:text-5xl">
+        <h2 className="text-2xl font-extrabold text-slate-900 sm:text-4xl lg:text-5xl">
           Ministry Teams
         </h2>
         <p className="mx-auto mt-4 max-w-lg text-base text-slate-600">
@@ -294,7 +294,7 @@ const DonateSection = () => (
       style={{ background: "radial-gradient(circle at 30% 20%, #fff 0%, transparent 50%)" }}
     />
     <div className="relative mx-auto max-w-3xl text-center">
-      <h2 className="text-4xl font-black text-white lg:text-5xl">
+      <h2 className="text-2xl font-black text-white sm:text-4xl lg:text-5xl">
         Support Our Mission
       </h2>
       <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-blue-200 lg:text-xl">
@@ -317,7 +317,7 @@ const UpdatesSection = () => (
     <div className="mx-auto max-w-7xl">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <h2 className="text-4xl font-extrabold text-slate-900 lg:text-5xl">
+          <h2 className="text-2xl font-extrabold text-slate-900 sm:text-4xl lg:text-5xl">
             Latest Updates
           </h2>
           <p className="mt-4 text-base text-slate-600">
@@ -366,18 +366,18 @@ const UpdatesSection = () => (
 const JoinCTASection = () => (
   <section className="bg-white px-6 py-24 lg:px-8">
     <div
-      className="mx-auto max-w-7xl rounded-3xl border border-indigo-200 px-8 py-20 text-center lg:px-20"
+      className="mx-auto max-w-7xl rounded-3xl border border-indigo-200 px-6 py-16 text-center sm:px-8 sm:py-20 lg:px-20"
       style={{ background: "linear-gradient(173deg, #EEF2FF 0%, #FAF5FF 100%)" }}
     >
-      <h2 className="mx-auto max-w-4xl text-4xl font-black text-slate-900 lg:text-6xl">
+      <h2 className="mx-auto max-w-4xl text-2xl font-black text-slate-900 sm:text-4xl lg:text-6xl">
         Become Part of Something Greater
       </h2>
-      <p className="mx-auto mt-8 max-w-2xl text-lg text-slate-600 lg:text-2xl">
+      <p className="mx-auto mt-6 max-w-2xl text-base text-slate-600 sm:mt-8 sm:text-lg lg:text-2xl">
         Your journey at ASTU doesn&apos;t have to be walked alone. Join a community that supports your faith and your future.
       </p>
       <a
         href="/signup"
-        className="mt-10 inline-block rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-12 py-5 text-xl font-black text-white shadow-lg shadow-black/10 transition-shadow hover:shadow-xl"
+        className="mt-8 inline-block rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-8 py-4 text-base font-black text-white shadow-lg shadow-black/10 transition-shadow hover:shadow-xl sm:mt-10 sm:px-12 sm:py-5 sm:text-xl"
       >
         Get Involved Today
       </a>

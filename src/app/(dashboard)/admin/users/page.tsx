@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation"
 import { headers } from "next/headers"
-import { UserApprovalPanel, UserManagementPanel } from "@/features/admin"
-import { AdminUsersTabs } from "@/features/admin/components/admin-users-tabs"
+import { UserApprovalPanel, UserManagementPanel, AdminUsersTabs } from "@/features/admin"
 
 const fetchUsers = async (filter: "pending" | "all") => {
   const headersList = await headers()
