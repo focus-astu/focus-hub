@@ -39,6 +39,8 @@ export const counselor = ac.newRole({
 export const generalLeader = ac.newRole({
   announcement: ["create", "read", "update", "delete"],
   blogPost: ["create", "read", "update", "delete"],
+  task: ["read"],
+  learningResource: ["read"],
 })
 
 export const platformAdmin = ac.newRole({
