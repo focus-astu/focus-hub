@@ -6,7 +6,7 @@ const AUTH_ROUTES = new Set(["/login", "/signup", "/forgot-password", "/reset-pa
 const isProtectedRoute = (pathname: string) =>
   pathname.startsWith("/dashboard") || pathname.startsWith("/admin")
 
-export const middleware = (request: NextRequest) => {
+export const proxy = (request: NextRequest) => {
   const { pathname } = request.nextUrl
 
   const hasSession = !!(
