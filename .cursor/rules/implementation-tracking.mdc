@@ -1,0 +1,20 @@
+# Implementation Status Tracking
+
+## Rule
+
+Whenever a new feature, page, API route, use case, component, or infrastructure change is implemented and merged, **you must update** `docs/implementation-status.md` to reflect the change.
+
+## What to Update
+
+- **Backend section**: New API routes, use cases, domain entities, ports, adapters, plugins, or infrastructure services
+- **Frontend section**: New pages, feature components, UI primitives, hooks, or libraries
+- **Environment Variables**: Any new env vars required
+- **Not Yet Implemented**: Remove items as they get built; add newly discovered gaps
+
+## How to Update
+
+1. Add a row to the appropriate table in the matching section
+2. Include: feature name, brief description, and key file paths
+3. If a "Not Yet Implemented" item is now done, move it to the correct section and remove from the list
+4. Keep descriptions concise — one sentence per entry
+5. Do not rewrite existing entries unless they are factually wrong

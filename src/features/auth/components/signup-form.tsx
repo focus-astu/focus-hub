@@ -119,6 +119,7 @@ export const SignupForm = () => {
             })
 
             if (data) {
+                await authClient.signOut()
                 router.push(`/verify-email?sent=true&email=${encodeURIComponent(email)}`)
             }
 
