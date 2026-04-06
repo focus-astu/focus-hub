@@ -5,3 +5,4 @@ export { cryptoIdGenerator } from "./infrastructure/adapters/crypto-id-generator
 export { createNodemailerEmailService } from "./infrastructure/email/nodemailer-email.service"
 export { emailVerificationTemplate } from "./infrastructure/email/templates/email-verification.template"
 export { accountApprovedTemplate } from "./infrastructure/email/templates/account-approved.template"
+export { passwordResetTemplate } from "./infrastructure/email/templates/password-reset.template"
