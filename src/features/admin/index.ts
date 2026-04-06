@@ -1,3 +1,6 @@
 export { UserApprovalPanel } from "./components/user-approval-panel"
 export { RejectReasonModal } from "./components/reject-reason-modal"
 export { OrgManagementPanel } from "./components/org-management-panel"
+export { UserManagementPanel } from "./components/user-management-panel"
+export { RoleChangeModal } from "./components/role-change-modal"
+export { AdminUsersTabs } from "./components/admin-users-tabs"

@@ -3,6 +3,7 @@ import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { auth } from "@/core/auth/infrastructure/config/auth"
 import { Logo } from "@/components/ui"
+import { NotificationBell } from "@/features/notifications"
 
 export default async function DashboardLayout({
   children,
@@ -17,6 +18,8 @@ export default async function DashboardLayout({
     redirect("/login")
   }
 
+  const isAdmin = session.user.role === "admin"
+
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
       <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-lg">
@@ -25,22 +28,27 @@ export default async function DashboardLayout({
             <Logo variant="full" size="sm" />
           </Link>
           <nav className="flex items-center gap-6" aria-label="Dashboard navigation">
-            <Link
-              href="/admin/users"
-              className="text-sm font-semibold text-slate-600 transition-colors hover:text-blue-600"
-              tabIndex={0}
-              aria-label="User Management"
-            >
-              Users
-            </Link>
-            <Link
-              href="/admin/organizations"
-              className="text-sm font-semibold text-slate-600 transition-colors hover:text-blue-600"
-              tabIndex={0}
-              aria-label="Organization Management"
-            >
-              Organizations
-            </Link>
+            {isAdmin && (
+              <>
+                <Link
+                  href="/admin/users"
+                  className="text-sm font-semibold text-slate-600 transition-colors hover:text-blue-600"
+                  tabIndex={0}
+                  aria-label="User Management"
+                >
+                  Users
+                </Link>
+                <Link
+                  href="/admin/organizations"
+                  className="text-sm font-semibold text-slate-600 transition-colors hover:text-blue-600"
+                  tabIndex={0}
+                  aria-label="Organization Management"
+                >
+                  Organizations
+                </Link>
+              </>
+            )}
+            <NotificationBell />
           </nav>
         </div>
       </header>
