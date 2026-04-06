@@ -1,26 +1,18 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 import { Rocket, LogOut, RefreshCw } from "lucide-react"
 
+const { useSession } = authClient
+
 export default function DashboardPage() {
   const router = useRouter()
-  const [userName, setUserName] = useState<string | null>(null)
+  const { data: session } = useSession()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
-  useEffect(() => {
-    const fetchSession = async () => {
-      const { data } = await authClient.getSession()
-      if (!data?.user) {
-        router.push("/login")
-        return
-      }
-      setUserName(data.user.name)
-    }
-    fetchSession()
-  }, [router])
+  const userName = session?.user?.name ?? null
 
   const handleLogout = async () => {
     setIsLoggingOut(true)

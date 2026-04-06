@@ -31,3 +31,29 @@ export type PendingUserResponseDTO = {
   status: UserStatus
   createdAt: string
 }
+
+export type UserRoleInfo = {
+  role: string
+  organizationId: string
+  organizationName: string
+}
+
+export type AllUsersResponseDTO = {
+  id: string
+  name: string
+  email: string
+  universityId: string
+  year: number
+  department: string | null
+  role: string
+  organizationRoles: UserRoleInfo[]
+  isSuper: boolean
+  createdAt: string
+}
+
+export type ChangeRoleDTO = {
+  userId: string
+  role: "teacher" | "counselor" | "generalLeader" | "admin"
+  action: "assign" | "remove"
+  adminId: string
+}

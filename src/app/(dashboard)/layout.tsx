@@ -1,11 +1,22 @@
 import Link from "next/link"
+import { headers } from "next/headers"
+import { redirect } from "next/navigation"
+import { auth } from "@/core/auth/infrastructure/config/auth"
 import { Logo } from "@/components/ui"
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+
+  if (!session) {
+    redirect("/login")
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
       <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-lg">
