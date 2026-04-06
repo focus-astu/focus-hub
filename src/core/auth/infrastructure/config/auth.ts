@@ -7,6 +7,7 @@ import { MongoClient, ObjectId, type Db } from "mongodb"
 import { ac, member, teacher, counselor, generalLeader, platformAdmin } from "./permissions"
 import { emailService } from "@/core/shared/infrastructure/config/dependencies"
 import { emailVerificationTemplate } from "@/core/shared/infrastructure/email/templates/email-verification.template"
+import { passwordResetTemplate } from "@/core/shared/infrastructure/email/templates/password-reset.template"
 
 let _client: MongoClient | null = null
 let _db: Db | null = null
@@ -17,6 +18,7 @@ const getDb = () => {
     if (!uri) throw new Error("MONGODB_URI environment variable is not set")
     _client = new MongoClient(uri)
     _db = _client.db()
+    _db.collection("user").createIndex({ email: 1 }, { unique: true }).catch(() => {})
   }
   return _db
 }
@@ -57,14 +59,38 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
+    sendResetPassword: async ({ user, url }) => {
+      const html = passwordResetTemplate({
+        userName: user.name,
+        resetUrl: url,
+      })
+      await emailService.send({
+        to: user.email,
+        subject: "Reset your Focus ASTU password",
+        html,
+      })
+    },
   },
 
   emailVerification: {
     sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url }) => {
+      let finalUrl: string
+      try {
+        const verificationUrl = new URL(url)
+        verificationUrl.searchParams.set(
+          "callbackURL",
+          `/verification-success?email=${encodeURIComponent(user.email)}`,
+        )
+        finalUrl = verificationUrl.toString()
+      } catch {
+        const separator = url.includes("?") ? "&" : "?"
+        finalUrl = `${url}${separator}callbackURL=${encodeURIComponent(`/verification-success?email=${encodeURIComponent(user.email)}`)}`
+      }
+
       const html = emailVerificationTemplate({
         userName: user.name,
-        verificationUrl: url,
+        verificationUrl: finalUrl,
       })
 
       await emailService.send({
@@ -78,18 +104,29 @@ export const auth = betterAuth({
 
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
-      if (ctx.path !== "/sign-in/email") return
+      if (ctx.path === "/sign-up/email") {
+        const email = ctx.body?.email
+        if (!email) return
+        const existing = await getDb().collection("user").findOne({ email })
+        if (existing) {
+          throw new APIError("UNPROCESSABLE_ENTITY", {
+            message: "An account with this email already exists",
+          })
+        }
+        return
+      }
 
-      const email = ctx.body?.email
-      if (!email) return
-
-      const user = await getDb().collection("user").findOne({ email })
-      if (!user) return
-      if (!user.emailVerified) return
-      if (!user.approved) {
-        throw new APIError("FORBIDDEN", {
-          message: "Your account is pending admin approval",
-        })
+      if (ctx.path === "/sign-in/email") {
+        const email = ctx.body?.email
+        if (!email) return
+        const user = await getDb().collection("user").findOne({ email })
+        if (!user) return
+        if (!user.emailVerified) return
+        if (!user.approved) {
+          throw new APIError("FORBIDDEN", {
+            message: "Your account is pending admin approval",
+          })
+        }
       }
     }),
   },
