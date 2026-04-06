@@ -62,9 +62,22 @@ export const auth = betterAuth({
   emailVerification: {
     sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url }) => {
+      let finalUrl: string
+      try {
+        const verificationUrl = new URL(url)
+        verificationUrl.searchParams.set(
+          "callbackURL",
+          `/verification-success?email=${encodeURIComponent(user.email)}`,
+        )
+        finalUrl = verificationUrl.toString()
+      } catch {
+        const separator = url.includes("?") ? "&" : "?"
+        finalUrl = `${url}${separator}callbackURL=${encodeURIComponent(`/verification-success?email=${encodeURIComponent(user.email)}`)}`
+      }
+
       const html = emailVerificationTemplate({
         userName: user.name,
-        verificationUrl: url,
+        verificationUrl: finalUrl,
       })
 
       await emailService.send({
