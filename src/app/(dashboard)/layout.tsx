@@ -19,6 +19,12 @@ export default async function DashboardLayout({
     redirect("/login")
   }
 
+  const user = session.user as typeof session.user & { approved?: boolean }
+
+  if (!user.approved) {
+    redirect(`/pending-approval?email=${encodeURIComponent(user.email)}`)
+  }
+
   const isAdmin = session.user.role === "admin"
 
   return (
