@@ -3,6 +3,8 @@ import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 import { auth } from "@/core/auth/infrastructure/config/auth"
 import { Logo } from "@/components/ui"
+import { NotificationBell } from "@/features/notifications"
+import { AdminSidebar, DashboardHeaderMobileMenu } from "@/features/admin"
 
 export default async function DashboardLayout({
   children,
@@ -17,36 +19,35 @@ export default async function DashboardLayout({
     redirect("/login")
   }
 
+  const user = session.user as typeof session.user & { approved?: boolean }
+
+  if (!user.approved) {
+    redirect(`/pending-approval?email=${encodeURIComponent(user.email)}`)
+  }
+
+  const isAdmin = session.user.role === "admin"
+
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
       <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-lg">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/" aria-label="Home" tabIndex={0}>
-            <Logo variant="full" size="sm" />
-          </Link>
-          <nav className="flex items-center gap-6" aria-label="Dashboard navigation">
-            <Link
-              href="/admin/users"
-              className="text-sm font-semibold text-slate-600 transition-colors hover:text-blue-600"
-              tabIndex={0}
-              aria-label="User Management"
-            >
-              Users
+        <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2">
+            {isAdmin && <DashboardHeaderMobileMenu />}
+            <Link href="/dashboard" aria-label="Dashboard" tabIndex={0}>
+              <Logo variant="full" size="sm" />
             </Link>
-            <Link
-              href="/admin/organizations"
-              className="text-sm font-semibold text-slate-600 transition-colors hover:text-blue-600"
-              tabIndex={0}
-              aria-label="Organization Management"
-            >
-              Organizations
-            </Link>
-          </nav>
+          </div>
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+          </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
-        {children}
-      </main>
+      <div className="flex flex-1">
+        {isAdmin && <AdminSidebar />}
+        <main className={`w-full min-w-0 flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-8 ${isAdmin ? "" : "mx-auto max-w-7xl"}`}>
+          {children}
+        </main>
+      </div>
     </div>
   )
 }

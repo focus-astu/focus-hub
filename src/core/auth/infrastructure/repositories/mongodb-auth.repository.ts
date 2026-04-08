@@ -1,7 +1,7 @@
 import type { AuthRepository } from "@/core/auth/application/ports/auth-repository.port"
 import type { PendingUserResponseDTO, AllUsersResponseDTO, UserRoleInfo } from "@/core/auth/application/dtos/auth.dto"
 import { UserStatus } from "@/core/auth/domain"
-import { MongoClient } from "mongodb"
+import { MongoClient, ObjectId } from "mongodb"
 
 export const createMongodbAuthRepository = (client: MongoClient): AuthRepository => {
   const db = client.db()
@@ -81,28 +81,28 @@ export const createMongodbAuthRepository = (client: MongoClient): AuthRepository
 
     approveUser: async (userId: string): Promise<void> => {
       await users.updateOne(
-        { _id: userId as unknown as import("mongodb").ObjectId },
+        { _id: new ObjectId(userId) },
         { $set: { approved: true } },
       )
     },
 
     rejectUser: async (userId: string, reason?: string): Promise<void> => {
       await users.updateOne(
-        { _id: userId as unknown as import("mongodb").ObjectId },
+        { _id: new ObjectId(userId) },
         { $set: { approved: false, rejectionReason: reason ?? null } },
       )
     },
 
     isUserApproved: async (userId: string): Promise<boolean> => {
       const user = await users.findOne({
-        _id: userId as unknown as import("mongodb").ObjectId,
+        _id: new ObjectId(userId),
       })
       return user?.approved === true
     },
 
     getUserById: async (userId: string): Promise<PendingUserResponseDTO | null> => {
       const user = await users.findOne({
-        _id: userId as unknown as import("mongodb").ObjectId,
+        _id: new ObjectId(userId),
       })
       if (!user) return null
 

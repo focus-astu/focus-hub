@@ -18,7 +18,10 @@ export default async function AuthLayout({
     })
 
     if (session) {
-        redirect("/dashboard")
+        const user = session.user as typeof session.user & { approved?: boolean }
+        if (user.approved) {
+            redirect("/dashboard")
+        }
     }
 
     return <>{children}</>
