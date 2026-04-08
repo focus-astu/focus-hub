@@ -20,6 +20,14 @@ import {
   createMarkAllNotificationsReadUseCase,
   createMongodbNotificationRepository,
 } from "@/core/notifications"
+import {
+  createCreatePostUseCase,
+  createGetPostsUseCase,
+  createToggleLikeUseCase,
+  createDeletePostUseCase,
+  createMongodbPostRepository,
+  createImageUploadService,
+} from "@/core/posts"
 import { MongoClient } from "mongodb"
 
 // ─── Shared Infrastructure ───────────────────────────────────
@@ -61,3 +69,12 @@ export const changeRole = createChangeRoleUseCase({
   notificationRepository,
   mongoClient,
 })
+
+// ─── Posts Feature ────────────────────────────────────────────
+const postRepository = createMongodbPostRepository(mongoClient)
+const imageUploadService = createImageUploadService()
+
+export const createPost = createCreatePostUseCase({ postRepository, imageUploadService })
+export const getPosts = createGetPostsUseCase({ postRepository })
+export const toggleLike = createToggleLikeUseCase({ postRepository })
+export const deletePost = createDeletePostUseCase({ postRepository })
