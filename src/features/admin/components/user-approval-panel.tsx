@@ -112,7 +112,7 @@ export const UserApprovalPanel = ({ initialUsers }: UserApprovalPanelProps) => {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm md:block">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
@@ -185,6 +185,68 @@ export const UserApprovalPanel = ({ initialUsers }: UserApprovalPanelProps) => {
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div className="space-y-3 md:hidden">
+        {users.map((user) => (
+          <div
+            key={user.id}
+            className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-semibold text-slate-900">{user.name}</p>
+                <p className="mt-0.5 truncate text-sm text-slate-500">{user.email}</p>
+              </div>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
+              <div>
+                <span className="text-xs text-slate-400">ID</span>
+                <p className="font-mono text-slate-700">{user.universityId}</p>
+              </div>
+              <div>
+                <span className="text-xs text-slate-400">Year</span>
+                <p className="text-slate-700">Year {user.year}</p>
+              </div>
+              <div>
+                <span className="text-xs text-slate-400">Department</span>
+                <p className="text-slate-700">{user.department || "—"}</p>
+              </div>
+              <div>
+                <span className="text-xs text-slate-400">Registered</span>
+                <p className="text-slate-700">{formatDate(user.createdAt)}</p>
+              </div>
+            </div>
+            <div className="mt-3 flex gap-2 border-t border-slate-100 pt-3">
+              <button
+                type="button"
+                onClick={() => handleApprove(user.id)}
+                disabled={actionLoading[user.id]}
+                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 transition-all hover:bg-emerald-100 disabled:opacity-50"
+                tabIndex={0}
+                aria-label={`Approve ${user.name}`}
+              >
+                {actionLoading[user.id] ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <CheckCircle className="h-4 w-4" />
+                )}
+                Approve
+              </button>
+              <button
+                type="button"
+                onClick={() => setRejectTarget(user)}
+                disabled={actionLoading[user.id]}
+                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 transition-all hover:bg-red-100 disabled:opacity-50"
+                tabIndex={0}
+                aria-label={`Reject ${user.name}`}
+              >
+                <XCircle className="h-4 w-4" />
+                Reject
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
       <RejectReasonModal

@@ -58,7 +58,7 @@ export const NotificationDropdown = ({
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} />
-      <div className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl sm:w-96">
+      <div className="fixed left-2 right-2 top-[4.5rem] z-50 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl sm:absolute sm:left-auto sm:top-full sm:mt-2 sm:w-96 sm:right-0">
         <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
           <h3 className="text-sm font-bold text-slate-900">Notifications</h3>
           {unreadCount > 0 && (
