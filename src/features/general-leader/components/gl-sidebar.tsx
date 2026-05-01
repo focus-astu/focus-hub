@@ -8,6 +8,8 @@ import {
   LayoutDashboard,
   ChevronLeft,
   X,
+  Newspaper,
+  UsersRound,
 } from "lucide-react"
 import { useState, useEffect } from "react"
 
@@ -26,6 +28,16 @@ const NAV_ITEMS = [
     label: "Posts",
     href: "/general-leader/posts",
     icon: FileText,
+  },
+  {
+    label: "Updates",
+    href: "/general-leader/updates",
+    icon: Newspaper,
+  },
+  {
+    label: "Teams",
+    href: "/general-leader/teams",
+    icon: UsersRound,
   },
 ]
 

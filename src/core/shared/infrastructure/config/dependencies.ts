@@ -25,9 +25,25 @@ import {
   createGetPostsUseCase,
   createToggleLikeUseCase,
   createDeletePostUseCase,
+  createGetTopPostsUseCase,
   createMongodbPostRepository,
   createImageUploadService,
 } from "@/core/posts"
+import {
+  createCreateUpdateUseCase,
+  createGetUpdatesUseCase,
+  createEditUpdateUseCase,
+  createDeleteUpdateUseCase,
+  createGetUpdateByIdUseCase,
+  createMongodbUpdateRepository,
+} from "@/core/updates"
+import {
+  createCreateTeamUseCase,
+  createGetTeamsUseCase,
+  createEditTeamUseCase,
+  createDeleteTeamUseCase,
+  createMongodbTeamRepository,
+} from "@/core/teams"
 import { getSupabaseClient } from "@/core/shared/infrastructure/supabase/supabase-client"
 import { MongoClient } from "mongodb"
 
@@ -80,3 +96,21 @@ export const createPost = createCreatePostUseCase({ postRepository, imageUploadS
 export const getPosts = createGetPostsUseCase({ postRepository })
 export const toggleLike = createToggleLikeUseCase({ postRepository })
 export const deletePost = createDeletePostUseCase({ postRepository, imageUploadService })
+export const getTopPosts = createGetTopPostsUseCase({ postRepository })
+
+// ─── Updates Feature ─────────────────────────────────────────
+const updateRepository = createMongodbUpdateRepository(mongoClient)
+
+export const createUpdate = createCreateUpdateUseCase({ updateRepository, imageUploadService })
+export const getUpdates = createGetUpdatesUseCase({ updateRepository })
+export const editUpdate = createEditUpdateUseCase({ updateRepository, imageUploadService })
+export const deleteUpdate = createDeleteUpdateUseCase({ updateRepository, imageUploadService })
+export const getUpdateById = createGetUpdateByIdUseCase({ updateRepository })
+
+// ─── Teams Feature ───────────────────────────────────────────
+const teamRepository = createMongodbTeamRepository(mongoClient)
+
+export const createTeam = createCreateTeamUseCase({ teamRepository })
+export const getTeams = createGetTeamsUseCase({ teamRepository })
+export const editTeam = createEditTeamUseCase({ teamRepository })
+export const deleteTeam = createDeleteTeamUseCase({ teamRepository })

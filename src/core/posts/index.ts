@@ -12,6 +12,7 @@ export type {
   GetPostsDependencies,
   ToggleLikeDependencies,
   DeletePostDependencies,
+  GetTopPostsDependencies,
 } from "./application"
 
 export {
@@ -19,6 +20,7 @@ export {
   createGetPostsUseCase,
   createToggleLikeUseCase,
   createDeletePostUseCase,
+  createGetTopPostsUseCase,
 } from "./application"
 
 export { createMongodbPostRepository } from "./infrastructure/repositories/mongodb-post.repository"

@@ -19,3 +19,6 @@ export type { ToggleLikeDependencies } from "./use-cases/toggle-like.use-case"
 
 export { createDeletePostUseCase } from "./use-cases/delete-post.use-case"
 export type { DeletePostDependencies } from "./use-cases/delete-post.use-case"
+
+export { createGetTopPostsUseCase } from "./use-cases/get-top-posts.use-case"
+export type { GetTopPostsDependencies } from "./use-cases/get-top-posts.use-case"
