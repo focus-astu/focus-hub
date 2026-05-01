@@ -35,7 +35,9 @@ export const GLSidebar = () => {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
-    setMobileOpen(false)
+    queueMicrotask(() => {
+      setMobileOpen(false)
+    })
   }, [pathname])
 
   useEffect(() => {

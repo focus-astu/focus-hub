@@ -22,10 +22,11 @@ export const RejectReasonModal = ({
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) return
+    queueMicrotask(() => {
       setReason("")
       setTimeout(() => inputRef.current?.focus(), 100)
-    }
+    })
   }, [isOpen])
 
   if (!isOpen) return null

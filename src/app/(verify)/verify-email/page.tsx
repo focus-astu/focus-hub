@@ -4,7 +4,7 @@ import { Suspense } from "react"
 import { authClient } from "@/lib/auth-client"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import {
   Mail,
   CheckCircle,
@@ -30,7 +30,6 @@ const maskEmail = (email: string) => {
 const VerifyEmailContent = () => {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [state, setState] = useState<VerifyState>({ status: "sent" })
   const [resendState, setResendState] = useState<"idle" | "sending" | "sent" | "error">("idle")
   const [resendError, setResendError] = useState("")
   const [cooldown, setCooldown] = useState(0)
@@ -39,32 +38,45 @@ const VerifyEmailContent = () => {
   const emailFromUrl = searchParams.get("email")
   const displayEmail = emailFromUrl ? maskEmail(emailFromUrl) : null
 
-  const verifyToken = useCallback(async (t: string) => {
-    setState({ status: "verifying" })
-
-    const { error } = await authClient.verifyEmail({
-      query: { token: t },
-    })
-
-    if (error) {
-      setState({
-        status: "error",
-        message:
-          error.message ??
-          "Invalid or expired verification link. Please request a new one.",
-      })
-    } else {
-      setState({ status: "success" })
-    }
-  }, [])
+  const [state, setState] = useState<VerifyState>(() =>
+    token ? { status: "verifying" } : { status: "sent" },
+  )
 
   useEffect(() => {
-    if (token) {
-      verifyToken(token)
-    } else {
-      setState({ status: "sent" })
+    if (!token) {
+      queueMicrotask(() => {
+        setState({ status: "sent" })
+      })
+      return
     }
-  }, [token, verifyToken])
+
+    let cancelled = false
+
+    queueMicrotask(() => {
+      setState({ status: "verifying" })
+      void (async () => {
+        const { error } = await authClient.verifyEmail({
+          query: { token },
+        })
+        if (cancelled) return
+
+        if (error) {
+          setState({
+            status: "error",
+            message:
+              error.message ??
+              "Invalid or expired verification link. Please request a new one.",
+          })
+        } else {
+          setState({ status: "success" })
+        }
+      })()
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [token])
 
   useEffect(() => {
     if (state.status === "success") {

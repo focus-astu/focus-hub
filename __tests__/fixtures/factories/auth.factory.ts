@@ -1,5 +1,4 @@
 import type { RegisterDTO, PendingUserResponseDTO } from "@/core/auth"
-import { UserStatus } from "@/core/auth"
 import { MOCK_REGISTER_DTO, MOCK_PENDING_USER } from "../auth.fixture"
 
 let counter = 0

@@ -30,7 +30,7 @@ export const LoginForm = () => {
         setIsLoading(true)
 
         try {
-            const { data, error } = await authClient.signIn.email(
+            const { data } = await authClient.signIn.email(
                 { email, password },
                 {
                         onError: (ctx) => {

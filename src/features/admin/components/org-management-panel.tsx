@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Building2, UserPlus, Users, Loader2, Trash2, ChevronDown, ChevronUp } from "lucide-react"
+import { Building2, UserPlus, Users, Loader2, ChevronDown, ChevronUp } from "lucide-react"
 
 type Organization = {
   id: string
@@ -28,7 +28,7 @@ const AVAILABLE_ROLES = [
 ]
 
 export const OrgManagementPanel = ({ initialOrgs }: OrgManagementPanelProps) => {
-  const [orgs, setOrgs] = useState<Organization[]>(initialOrgs)
+  const [orgs] = useState<Organization[]>(initialOrgs)
   const [expandedOrg, setExpandedOrg] = useState<string | null>(null)
   const [addMemberForm, setAddMemberForm] = useState<{
     orgId: string

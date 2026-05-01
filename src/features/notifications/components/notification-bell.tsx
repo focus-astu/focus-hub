@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect } from "react"
 import { Bell } from "lucide-react"
 import { NotificationDropdown } from "./notification-dropdown"
 
@@ -18,19 +18,7 @@ export const NotificationBell = () => {
   const [notifications, setNotifications] = useState<NotificationItem[]>([])
   const [unreadCount, setUnreadCount] = useState(0)
 
-  const fetchUnreadCount = useCallback(async () => {
-    try {
-      const res = await fetch("/api/v1/notifications?countOnly=true")
-      if (res.ok) {
-        const data = await res.json()
-        setUnreadCount(data.count ?? 0)
-      }
-    } catch {
-      /* silent */
-    }
-  }, [])
-
-  const fetchNotifications = useCallback(async () => {
+  const fetchNotifications = async () => {
     try {
       const res = await fetch("/api/v1/notifications")
       if (res.ok) {
@@ -42,13 +30,27 @@ export const NotificationBell = () => {
     } catch {
       /* silent */
     }
-  }, [])
+  }
 
   useEffect(() => {
-    fetchUnreadCount()
-    const interval = setInterval(fetchUnreadCount, 30_000)
+    const loadUnreadCount = async () => {
+      try {
+        const res = await fetch("/api/v1/notifications?countOnly=true")
+        if (res.ok) {
+          const data = await res.json()
+          setUnreadCount(data.count ?? 0)
+        }
+      } catch {
+        /* silent */
+      }
+    }
+
+    void loadUnreadCount()
+    const interval = setInterval(() => {
+      void loadUnreadCount()
+    }, 30_000)
     return () => clearInterval(interval)
-  }, [fetchUnreadCount])
+  }, [])
 
   const handleOpen = () => {
     if (!isOpen) fetchNotifications()

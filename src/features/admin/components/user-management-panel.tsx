@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Users, Search, Settings2, Shield, Loader2 } from "lucide-react"
+import { Users, Search, Settings2, Shield } from "lucide-react"
 import { RoleChangeModal } from "./role-change-modal"
 
 type UserRoleInfo = {

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { Menu, X, ChevronRight, MapPin, Mail, Users, BookOpen, Mic2, Shield, Heart, Loader2 } from "lucide-react"
 import { Logo } from "@/components/ui"
 
@@ -101,9 +102,9 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
-        <a href="/" aria-label="Focus ASTU Home">
+        <Link href="/" aria-label="Focus ASTU Home">
           <Logo variant="full" size="sm" />
-        </a>
+        </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">
           {NAV_LINKS.map(link => (
