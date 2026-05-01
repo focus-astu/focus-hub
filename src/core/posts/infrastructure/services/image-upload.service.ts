@@ -1,13 +1,13 @@
-import { writeFile, mkdir } from "fs/promises"
-import path from "path"
+import type { SupabaseClient } from "@supabase/supabase-js"
 import { ValidationError } from "@/core/shared"
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "posts")
+const BUCKET_NAME = "post-images"
 
 export type ImageUploadService = {
   upload: (base64Data: string) => Promise<string>
+  delete: (imageUrl: string) => Promise<void>
 }
 
 const parseMimeType = (base64: string): { mimeType: string, data: string } => {
@@ -23,7 +23,14 @@ const mimeToExt: Record<string, string> = {
   "image/gif": ".gif",
 }
 
-export const createImageUploadService = (): ImageUploadService => ({
+const extractStoragePath = (publicUrl: string): string | null => {
+  const marker = `/storage/v1/object/public/${BUCKET_NAME}/`
+  const idx = publicUrl.indexOf(marker)
+  if (idx === -1) return null
+  return publicUrl.slice(idx + marker.length)
+}
+
+export const createImageUploadService = (supabase: SupabaseClient): ImageUploadService => ({
   upload: async (base64Data: string): Promise<string> => {
     const { mimeType, data } = parseMimeType(base64Data)
 
@@ -37,14 +44,34 @@ export const createImageUploadService = (): ImageUploadService => ({
       throw new ValidationError("Image too large. Maximum size is 5MB.")
     }
 
-    await mkdir(UPLOAD_DIR, { recursive: true })
-
     const ext = mimeToExt[mimeType] ?? ".jpg"
     const filename = `${crypto.randomUUID()}${ext}`
-    const filepath = path.join(UPLOAD_DIR, filename)
+    const storagePath = `posts/${filename}`
 
-    await writeFile(filepath, buffer)
+    const { error } = await supabase.storage
+      .from(BUCKET_NAME)
+      .upload(storagePath, buffer, {
+        contentType: mimeType,
+        upsert: false,
+      })
 
-    return `/uploads/posts/${filename}`
+    if (error) {
+      throw new ValidationError(`Image upload failed: ${error.message}`)
+    }
+
+    const { data: urlData } = supabase.storage
+      .from(BUCKET_NAME)
+      .getPublicUrl(storagePath)
+
+    return urlData.publicUrl
+  },
+
+  delete: async (imageUrl: string): Promise<void> => {
+    const storagePath = extractStoragePath(imageUrl)
+    if (!storagePath) return
+
+    await supabase.storage
+      .from(BUCKET_NAME)
+      .remove([storagePath])
   },
 })

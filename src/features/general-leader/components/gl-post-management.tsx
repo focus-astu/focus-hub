@@ -142,25 +142,25 @@ export const GLPostManagement = ({ currentUserId }: { currentUserId: string }) =
         <p className="mt-1 text-sm text-slate-500">Create and manage fellowship posts</p>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="p-4 sm:p-6">
+      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="p-4">
           <textarea
             value={content}
             onChange={(e) => { setContent(e.target.value); setError("") }}
             placeholder="What's on your heart today? Share with the fellowship…"
-            rows={4}
-            className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition-all focus:border-purple-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-100"
+            rows={3}
+            className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition-all focus:border-purple-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-100"
             aria-label="Post content"
           />
 
           {imagePreview && (
-            <div className="relative mt-3 inline-block">
+            <div className="relative mt-2 inline-block">
               <Image
                 src={imagePreview}
                 alt="Upload preview"
-                width={200}
-                height={200}
-                className="rounded-xl border border-slate-200 object-cover"
+                width={120}
+                height={120}
+                className="rounded-lg border border-slate-200 object-cover"
               />
               <button
                 type="button"
@@ -178,7 +178,7 @@ export const GLPostManagement = ({ currentUserId }: { currentUserId: string }) =
             <p className="mt-3 text-sm font-medium text-red-600" role="alert">{error}</p>
           )}
 
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-3 flex items-center justify-between">
             <div>
               <input
                 ref={fileInputRef}
@@ -224,51 +224,50 @@ export const GLPostManagement = ({ currentUserId }: { currentUserId: string }) =
           <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
         </div>
       ) : posts.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
-          <FileText className="mx-auto h-10 w-10 text-slate-300" />
-          <p className="mt-3 text-sm font-medium text-slate-500">No posts yet. Create the first one!</p>
+        <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
+          <FileText className="mx-auto h-8 w-8 text-slate-300" />
+          <p className="mt-2 text-xs font-medium text-slate-500">No posts yet. Create the first one!</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="grid gap-3 sm:grid-cols-2">
           {posts.map((post) => (
-            <div key={post.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <div className="p-4 sm:p-6">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <span className="text-sm font-bold text-slate-900">{post.authorName}</span>
-                    <span className="ml-2 text-xs text-slate-400">{formatTimeAgo(post.createdAt)}</span>
+            <div key={post.id} className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+              {post.imageUrl && (
+                <div className="relative h-36 w-full">
+                  <Image
+                    src={post.imageUrl}
+                    alt="Post image"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              )}
+              <div className="p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="text-xs font-bold text-slate-900 truncate">{post.authorName}</span>
+                    <span className="shrink-0 text-[10px] text-slate-400">{formatTimeAgo(post.createdAt)}</span>
                   </div>
                   {post.authorId === currentUserId && (
                     <button
                       type="button"
                       onClick={() => handleDelete(post.id)}
                       disabled={deleteLoading[post.id]}
-                      className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500 disabled:opacity-50"
+                      className="shrink-0 rounded p-1 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500 disabled:opacity-50"
                       tabIndex={0}
                       aria-label="Delete post"
                     >
                       {deleteLoading[post.id] ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
                       ) : (
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5" />
                       )}
                     </button>
                   )}
                 </div>
-                <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">{post.content}</p>
-                {post.imageUrl && (
-                  <div className="mt-4">
-                    <Image
-                      src={post.imageUrl}
-                      alt="Post image"
-                      width={600}
-                      height={400}
-                      className="w-full rounded-xl object-cover"
-                    />
-                  </div>
-                )}
-                <div className="mt-3 flex items-center gap-2 text-xs text-slate-400">
-                  <span>{post.likeCount} {post.likeCount === 1 ? "like" : "likes"}</span>
+                <p className="mt-1.5 line-clamp-3 text-xs leading-relaxed text-slate-600">{post.content}</p>
+                <div className="mt-2 text-[10px] text-slate-400">
+                  {post.likeCount} {post.likeCount === 1 ? "like" : "likes"}
                 </div>
               </div>
             </div>

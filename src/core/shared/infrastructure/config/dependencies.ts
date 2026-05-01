@@ -28,6 +28,7 @@ import {
   createMongodbPostRepository,
   createImageUploadService,
 } from "@/core/posts"
+import { getSupabaseClient } from "@/core/shared/infrastructure/supabase/supabase-client"
 import { MongoClient } from "mongodb"
 
 // ─── Shared Infrastructure ───────────────────────────────────
@@ -72,9 +73,10 @@ export const changeRole = createChangeRoleUseCase({
 
 // ─── Posts Feature ────────────────────────────────────────────
 const postRepository = createMongodbPostRepository(mongoClient)
-const imageUploadService = createImageUploadService()
+const supabaseClient = getSupabaseClient()
+const imageUploadService = createImageUploadService(supabaseClient)
 
 export const createPost = createCreatePostUseCase({ postRepository, imageUploadService })
 export const getPosts = createGetPostsUseCase({ postRepository })
 export const toggleLike = createToggleLikeUseCase({ postRepository })
-export const deletePost = createDeletePostUseCase({ postRepository })
+export const deletePost = createDeletePostUseCase({ postRepository, imageUploadService })
